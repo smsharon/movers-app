@@ -11,7 +11,7 @@ from models import db, User, Inventory, Location, Notification, MovingCompany, Q
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
-app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to a secure random key
+app.config['SECRET_KEY'] = 'your_secret_key'  
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 migarte = Migrate(app, db)
 db.init_app(app)
@@ -162,7 +162,6 @@ def delete_location(location_id):
     else:
         return jsonify({'error': 'Location not found'})
 
-# ... Other routes ...
 
 # Create notification route
 @app.route('/create-notification', methods=['POST'])

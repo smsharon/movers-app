@@ -1,8 +1,8 @@
-"""Initial migration
+"""initial migration
 
-Revision ID: 3f6fdb277708
+Revision ID: 6acce5930b4d
 Revises: 
-Create Date: 2023-11-23 16:28:26.469225
+Create Date: 2023-11-23 23:28:04.260702
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3f6fdb277708'
+revision = '6acce5930b4d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,6 +26,12 @@ def upgrade():
     sa.Column('contact_phone', sa.String(length=20), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('residence',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
+    )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=50), nullable=False),
@@ -37,10 +43,11 @@ def upgrade():
     )
     op.create_table('inventory',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('residence_type', sa.String(length=50), nullable=False),
+    sa.Column('residence_type_id', sa.Integer(), nullable=False),
     sa.Column('item', sa.String(length=50), nullable=False),
     sa.Column('quantity', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['residence_type_id'], ['residence.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -66,7 +73,9 @@ def upgrade():
     sa.Column('company_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('quote_amount', sa.Integer(), nullable=True),
+    sa.Column('residence_type_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['company_id'], ['moving_company.id'], ),
+    sa.ForeignKeyConstraint(['residence_type_id'], ['residence.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -77,7 +86,9 @@ def upgrade():
     sa.Column('booking_status', sa.String(length=50), nullable=True),
     sa.Column('moving_date', sa.Date(), nullable=True),
     sa.Column('moving_time', sa.Time(), nullable=True),
+    sa.Column('residence_type_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['quote_id'], ['quote.id'], ),
+    sa.ForeignKeyConstraint(['residence_type_id'], ['residence.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -92,5 +103,6 @@ def downgrade():
     op.drop_table('location')
     op.drop_table('inventory')
     op.drop_table('user')
+    op.drop_table('residence')
     op.drop_table('moving_company')
     # ### end Alembic commands ###
