@@ -15,8 +15,8 @@ class Inventory(db.Model):
     item = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref=db.backref('inventory', lazy=True))
-    residence = db.relationship('Residence', backref=db.backref('inventory_items', lazy=True))
+    residence_type = db.relationship('Residence', backref=db.backref('inventory_items', lazy=True))
+    user = db.relationship('User', backref=db.backref('inventory_items', lazy=True))
 
 
 class Location(db.Model):
@@ -32,6 +32,8 @@ class Notification(db.Model):
     notification_type = db.Column(db.String(50))
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref=db.backref('notification', lazy=True))
+
 
 class MovingCompany(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -57,6 +59,10 @@ class Booking(db.Model):
     moving_time = db.Column(db.Time)
     residence_type_id = db.Column(db.Integer, db.ForeignKey('residence.id'), nullable=False)
     residence_type = db.relationship('Residence', backref=db.backref('bookings', lazy=True))
+    user = db.relationship('User', backref=db.backref('bookings', lazy=True))
+    quote = db.relationship('Quote', backref=db.backref('bookings', lazy=True))
+
+
 class Residence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)    
