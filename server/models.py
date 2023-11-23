@@ -11,12 +11,13 @@ class User(db.Model):
 
 class Inventory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    residence_type_id = db.Column(db.Integer, db.ForeignKey('residence_type.id'), nullable=False)
+    residence_type_id = db.Column(db.Integer, db.ForeignKey('residence.id'), nullable=False)
     item = db.Column(db.String(50), nullable=False)
     quantity = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref=db.backref('inventory', lazy=True))
     residence = db.relationship('Residence', backref=db.backref('inventory_items', lazy=True))
+
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
