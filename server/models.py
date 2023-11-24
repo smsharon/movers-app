@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import Flask, request, jsonify
 
 db = SQLAlchemy()
 
@@ -61,7 +62,6 @@ class Booking(db.Model):
     residence_type = db.relationship('Residence', backref=db.backref('bookings', lazy=True))
     user = db.relationship('User', backref=db.backref('bookings', lazy=True))
     quote = db.relationship('Quote', backref=db.backref('bookings', lazy=True))
-
 
 class Residence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
