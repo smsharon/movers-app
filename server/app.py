@@ -313,28 +313,24 @@ def update_booking(booking_id):
         
         try:
             moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
-            print(moving_date)
-            # Strip the trailing colon from the 'moving_time' value
-            moving_time_str = data['moving_time'].rstrip(':')
-            moving_time = datetime.strptime(moving_time_str, '%H:%M').time()
-            print(moving_time)
+            moving_time = datetime.strptime(data['moving_time'], '%H:%M:%S').time()
         except ValueError as e:
             return jsonify({'error': f'Error parsing date or time: {str(e)}'}), 400
         
-        booking.update(data)
-        booking.moving_date = moving_date
-        booking.user_id = data.get('user_id', booking.user_id)
-        booking.quote_id = data.get('quote_id', booking.quote_id)
-        booking.booking_status = data.get('booking_status', booking.booking_status)
-        booking.moving_date = data.get('moving_date', booking.moving_date)
-        booking.moving_time = data.get('moving_time', moving_time)
-        booking.residence_type_id = data.get('residence_type_id', booking.residence_type_id)
+        # Update individual attributes using setattr
+        setattr(booking, 'moving_date', moving_date)
+        setattr(booking, 'user_id', data.get('user_id', booking.user_id))
+        setattr(booking, 'quote_id', data.get('quote_id', booking.quote_id))
+        setattr(booking, 'booking_status', data.get('booking_status', booking.booking_status))
+        setattr(booking, 'moving_time', moving_time)
+        setattr(booking, 'residence_type_id', data.get('residence_type_id', booking.residence_type_id))
         
         db.session.commit()
         
         return jsonify({'message': 'Booking updated successfully'}), 200
     else:
         return jsonify({'error': 'Booking not found'}), 404
+
 
 
 if __name__ == '__main__':
