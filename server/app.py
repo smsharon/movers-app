@@ -330,6 +330,27 @@ def update_booking(booking_id):
         return jsonify({'message': 'Booking updated successfully'}), 200
     else:
         return jsonify({'error': 'Booking not found'}), 404
+# Endpoint to delete a user by ID
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': 'User deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'User not found'}), 404
+
+# Endpoint to delete a booking by ID
+@app.route('/bookings/<int:booking_id>', methods=['DELETE'])
+def delete_booking(booking_id):
+    booking = Booking.query.get(booking_id)
+    if booking:
+        db.session.delete(booking)
+        db.session.commit()
+        return jsonify({'message': 'Booking deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Booking not found'}), 404        
 
 
 
