@@ -12,6 +12,7 @@ flask-wtf = "*"
 wtforms = "*"
 flask-login = "*"
 flask-migrate = "*"
+email-validator = "*"
 
 [dev-packages]
 

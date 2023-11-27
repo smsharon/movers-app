@@ -1,25 +1,126 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField
-from wtforms.validators import InputRequired
+from wtforms import StringField, IntegerField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, Email
 from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence
 from datetime import datetime
+from flask_wtf.csrf import generate_csrf
+from flask import jsonify
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
-app.config['SECRET_KEY'] = 'your_secret_key'  
+app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-migarte = Migrate(app, db)
+migrate = Migrate(app, db)
 db.init_app(app)
-#db = SQLAlchemy(app)
 api = Api(app)
 CORS(app)
 login_manager = LoginManager(app)
+
+# Flask-Login setup
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Define the SignupForm
+class SignupForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=50)])
+    email = StringField('Email', validators=[InputRequired(), Email(), Length(max=100)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=6, max=100)])
+    submit = SubmitField('Sign Up')
+
+# Define the LoginForm
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=50)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=6, max=100)])
+    submit = SubmitField('Login')
+
+# Endpoint to get CSRF token
+@app.route('/csrf_token', methods=['GET'])
+def get_csrf_token():
+    csrf_token = generate_csrf()
+    return jsonify({'token': csrf_token})
+
+# Endpoint to create a new user
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    form = SignupForm(data=data)
+
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User created successfully'}), 201
+    else:
+        csrf_token = generate_csrf()
+        response = jsonify({'error': 'Validation failed', 'details': form.errors})
+        response.headers['X-CSRFToken'] = csrf_token
+        return response, 400
+
+# Route for user login
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    form = LoginForm(data=data)
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password, form.password.data):
+            login_user(user, remember=True)
+            return jsonify({'message': 'Login successful', 'user_id': user.id}), 200
+        else:
+            # Include the CSRF token in the response headers
+            csrf_token = generate_csrf()
+            response = jsonify({'error': 'Invalid username or password'})
+            response.headers['X-CSRFToken'] = csrf_token
+            return response, 401
+    else:
+        # Include the CSRF token in the response headers
+        csrf_token = generate_csrf()
+        response = jsonify({'error': 'Validation failed', 'details': form.errors})
+        response.headers['X-CSRFToken'] = csrf_token
+        return response, 400
+
+@app.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    logout_user()
+    return jsonify({'message': 'Logout successful'}), 200
+
+# Authentication resource
+class Auth(Resource):
+
+    def post(self):
+        form = LoginForm(data=request.get_json())
+        if form.validate_on_submit():
+            user = User.query.filter_by(username=form.username.data).first()
+            if user and check_password_hash(user.password, form.password.data):
+                login_user(user)
+                return {"message": "Logged in successfully!"}, 200
+            return {"message": "Invalid credentials!"}, 401
+        return {"message": "Invalid input!", "errors": form.errors}, 400
+
+    @login_required
+    def get(self):
+        return {
+            "id": current_user.id,
+            "username": current_user.username,
+            "email": current_user.email
+        }, 200
+
+# Add resources to the API
+api.add_resource(Auth, '/auth')
 
 @app.route('/')
 def index():
