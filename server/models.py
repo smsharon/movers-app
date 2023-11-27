@@ -55,6 +55,7 @@ class Notification(db.Model):
 class MovingCompany(db.Model):
     serialize_rules = ('-quote.moving_company',)
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     company_name = db.Column(db.String(100), nullable=False)
     contact_person = db.Column(db.String(50))
     contact_email = db.Column(db.String(100))
