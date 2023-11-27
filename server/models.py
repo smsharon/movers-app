@@ -12,20 +12,24 @@ class User(db.Model,SerializerMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
+    role = db.Column(db.String(20), nullable=False)
     # Relationships
     inventory = db.relationship('Inventory', back_populates='user')
     location = db.relationship('Location', back_populates='user')
     notification = db.relationship('Notification', back_populates='user')
     bookings = db.relationship('Booking', back_populates='user')
     quotes = db.relationship('Quote', back_populates='user')
+     # Relationship specific to MovingCompany
+    company = db.relationship('MovingCompany', back_populates='user', uselist=False)
+
+    # Relationship specific to Customer
+    customer = db.relationship('Customer', back_populates='user', uselist=False)
     
 
 class Inventory(db.Model,SerializerMixin):
     serialize_rules = ('-user.inventory',)
     id = db.Column(db.Integer, primary_key=True)
     residence_type_id = db.Column(db.Integer, db.ForeignKey('residence.id'), nullable=False)
-    item = db.Column(db.String(50), nullable=False)
-    quantity = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     residence_type = db.relationship('Residence', backref=db.backref('inventory_items', lazy=True))
     user = db.relationship('User', back_populates='inventory')
@@ -55,8 +59,13 @@ class MovingCompany(db.Model):
     contact_person = db.Column(db.String(50))
     contact_email = db.Column(db.String(100))
     contact_phone = db.Column(db.String(20))
-    quotes = db.relationship('Quote', back_populates='company')
+    extra_services = db.Column(db.String(50), nullable=False)
+    #service_area = db.Column(db.String(120), nullable=False)
 
+    #relationships
+    quotes = db.relationship('Quote', back_populates='company')
+    user = db.relationship('User', back_populates='company')
+    
 class Quote(db.Model):
     serialize_rules = ('-user.quotes', '-residence_type.quotes', '-moving_company.quotes', '-booking.quote', '-booking.residence_type.quotes')
 
@@ -86,7 +95,23 @@ class Booking(db.Model):
 class Residence(db.Model):
     serialize_rules = ('-inventory.residence_type', '-quote.residence_type', '-booking.residence_type')
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)    
+    name = db.Column(db.String(50), unique=True, nullable=False)  
+
+
+class Customer(db.Model, SerializerMixin):
+    serialize_rules = ('-user.customer',)
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    full_name = db.Column(db.String(100), nullable=False)
+    contact_phone = db.Column(db.String(20))
+    email = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.String(200))
+    preferred_contact_method = db.Column(db.String(20))
+    
+    # Relationships
+    user = db.relationship('User', back_populates='customer')
+
 
 
 
