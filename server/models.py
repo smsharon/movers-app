@@ -82,7 +82,7 @@ class MovingCompany(db.Model):
     contact_person = db.Column(db.String(50))
     contact_email = db.Column(db.String(100), unique=True, nullable=False)
     contact_phone = db.Column(db.String(20))
-    extra_services = db.Column(db.String(50), nullable=False)
+    extra_services = db.Column(db.String(50), nullable=True)
     #service_area = db.Column(db.String(120), nullable=False)
 
     #relationships
