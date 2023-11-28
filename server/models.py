@@ -1,15 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask, request, jsonify
-from sqlalchemy_serializer import SerializerMixin
+from flask_login import UserMixin
 from sqlalchemy.orm import validates
 import re
-
-
+from sqlalchemy_serializer import SerializerMixin
 
 db = SQLAlchemy()
 
-class User(db.Model,SerializerMixin):
+class User(db.Model,SerializerMixin, UserMixin):
     serialize_rules = ('-inventory.user', '-notification.user', '-location.user', '-booking.user', '-quote.user', '-quote.residence_type.quotes', '-location.user.location', '-booking.user.bookings', '-notification.user.notification')
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
