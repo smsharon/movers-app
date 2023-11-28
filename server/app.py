@@ -8,7 +8,7 @@ from wtforms.validators import InputRequired, Length, Email
 from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence
+from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence, Customer
 from datetime import datetime
 from flask_wtf.csrf import generate_csrf
 from flask import jsonify
@@ -122,61 +122,94 @@ class Auth(Resource):
 # Add resources to the API
 api.add_resource(Auth, '/auth')
 
-@app.route('/')
-def index():
-    return jsonify({'message': 'Welcome to BoxdNLoaded!!!'})
+class IndexResource(Resource):
+    def get(self):
+        return jsonify({'message': 'Welcome to BoxdNLoaded!!!'})
 
-@app.route('/users')
-def get_users():
-    # Debugging: Print a message to the console
-    print("Attempting to retrieve users from the database.")
+api.add_resource(IndexResource, '/')
 
-    # Retrieve users from the database
-    users = User.query.all()
+#user endpoints
+class UserResource(Resource):
+    def get(self):
+        users = User.query.all()
+        user_list = [{"username": user.username, "email": user.email, "role": user.role} for user in users]
+        return jsonify({"users": user_list})
 
-    # Debugging: Print the users to the console
-    print("Users retrieved from the database:", users)
+    def post(self):
+        data = request.get_json()
+        new_user = User(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            role=data['role']
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User created successfully'}), 201
 
-    # Convert users to JSON and return
-    user_list = [{"username": user.username, "email": user.email} for user in users]
-    return jsonify({"users": user_list})
+api.add_resource(UserResource, '/users')
 
-# Endpoint to get all inventory items
-@app.route('/inventory', methods=['GET'])
-def get_all_inventory():
-    inventory_items = Inventory.query.all()
-    inventory_list = [
-        {
-            'id': item.id,
-            'residence_type_id': item.residence_type_id,
-            'item': item.item,
-            'quantity': item.quantity,
-            'user_id': item.user_id
-        }
-        for item in inventory_items
-    ]
-    return jsonify({'inventory_items': inventory_list})
+#inventory endpoints
+class InventoryResource(Resource):
+    def get(self):
+        inventory_items = Inventory.query.all()
+        inventory_list = [
+            {
+                'id': item.id,
+                'residence_type_id': item.residence_type_id,
+                'user_id': item.user_id
+            }
+            for item in inventory_items
+        ]
+        return jsonify({'inventory_items': inventory_list})
 
-# Endpoint to get all locations
-@app.route('/locations', methods=['GET'])
-def get_all_locations():
-    locations = Location.query.all()
-    location_list = [
-        {
-            'id': loc.id,
-            'current_address': loc.current_address,
-            'new_address': loc.new_address,
-            'user_id': loc.user_id
-        }
-        for loc in locations
-    ]
-    return jsonify({'locations': location_list})
+    def post(self):
+        data = request.get_json()
+        new_inventory_item = Inventory(
+        residence_type_id=data['residence_type_id'],
+        user_id=data['user_id']
+       )
+        db.session.add(new_inventory_item)
+        db.session.commit()
+        return jsonify({'message': 'Inventory item created successfully'}), 201
 
-# Endpoint to get all notifications
-@app.route('/notifications', methods=['GET'])
-def get_all_notifications():
-    notifications = Notification.query.all()
-    notification_list = [
+api.add_resource(InventoryResource, '/inventory')
+
+#location endpoints
+class LocationResource(Resource):
+    def get(self):
+        locations = Location.query.all()
+        location_list = [
+            {
+                'id': loc.id,
+                'current_address': loc.current_address,
+                'new_address': loc.new_address,
+                'distance': loc.distance,
+                'user_id': loc.user_id
+            }
+            for loc in locations
+        ]
+        return jsonify({'locations': location_list})
+    def post(self):
+        data = request.get_json()
+        new_location = Location(
+        current_address=data['current_address'],
+        new_address=data['new_address'],
+        distance=data['distance'],
+        user_id=data['user_id']
+        )
+        db.session.add(new_location)
+        db.session.commit()
+        return jsonify({'message': 'Location created successfully'}), 201
+
+api.add_resource(LocationResource, '/locations')
+
+
+# notifications endpoints
+class NotificationResource(Resource):
+    def get(self):
+        notifications = Notification.query.all()
+        notification_list = [
         {
             'id': note.id,
             'user_id': note.user_id,
@@ -186,29 +219,56 @@ def get_all_notifications():
         }
         for note in notifications
     ]
-    return jsonify({'notifications': notification_list})
+        return jsonify({'notifications': notification_list})
+    def post(self):
+        data = request.get_json()
+        new_notification = Notification(
+        user_id=data['user_id'],
+        notification_type=data['notification_type'],
+        content=data['content']
+    )
+        db.session.add(new_notification)
+        db.session.commit()
+        return jsonify({'message': 'Notification created successfully'}), 201
+api.add_resource(NotificationResource, '/notifications')
 
-# Endpoint to get all moving companies
-@app.route('/moving_companies', methods=['GET'])
-def get_all_moving_companies():
-    companies = MovingCompany.query.all()
-    company_list = [
+
+# Endpoints for moving companies
+class MovingCompanyResource(Resource):
+    def get(self):
+        companies = MovingCompany.query.all()
+        company_list = [
         {
             'id': comp.id,
+            'user_id': comp.user_id,
             'company_name': comp.company_name,
             'contact_person': comp.contact_person,
             'contact_email': comp.contact_email,
-            'contact_phone': comp.contact_phone
+            'contact_phone': comp.contact_phone,
+            'extra_services': comp.extra_services
         }
         for comp in companies
     ]
-    return jsonify({'moving_companies': company_list})
+        return jsonify({'moving_companies': company_list})
+    def post(self):
+        data = request.get_json()
+        new_moving_company = MovingCompany(
+        company_name=data['company_name'],
+        contact_person=data['contact_person'],
+        contact_email=data['contact_email'],
+        contact_phone=data['contact_phone'],
+        extra_services=data['extra_services']
+    )
+        db.session.add(new_moving_company)
+        db.session.commit()
+        return jsonify({'message': 'Moving company created successfully'}), 201
+api.add_resource(MovingCompanyResource, '/moving_companies')
 
 # Endpoint to get all quotes
-@app.route('/quotes', methods=['GET'])
-def get_all_quotes():
-    quotes = Quote.query.all()
-    quote_list = [
+class QuoteResource(Resource):
+    def get(self):
+        quotes = Quote.query.all()
+        quote_list = [
         {
             'id': quote.id,
             'company_id': quote.company_id,
@@ -218,13 +278,24 @@ def get_all_quotes():
         }
         for quote in quotes
     ]
-    return jsonify({'quotes': quote_list})
-
-# Endpoint to get all bookings
-@app.route('/bookings', methods=['GET'])
-def get_all_bookings():
-    bookings = Booking.query.all()
-    booking_list = [
+        return jsonify({'quotes': quote_list})
+    def post(self):
+        data = request.get_json()
+        new_quote = Quote(
+        company_id=data['company_id'],
+        user_id=data['user_id'],
+        quote_amount=data['quote_amount'],
+        residence_type_id=data['residence_type_id']
+    )
+        db.session.add(new_quote)
+        db.session.commit()
+        return jsonify({'message': 'Quote created successfully'}), 201
+api.add_resource(QuoteResource, '/quotes')
+# Endpoint for bookings
+class BookingResource(Resource):
+    def get(self):
+        bookings = Booking.query.all()
+        booking_list = [
         {
             'id': booking.id,
             'user_id': booking.user_id,
@@ -236,130 +307,77 @@ def get_all_bookings():
         }
         for booking in bookings
     ]
-    return jsonify({'bookings': booking_list})
+        return jsonify({'bookings': booking_list})
+    def post(self):
+         data = request.get_json()
+         moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
+         moving_time = datetime.strptime(data['moving_time'], '%H:%M').time()
 
-# Endpoint to get all residences
-@app.route('/residences', methods=['GET'])
-def get_all_residences():
-    residences = Residence.query.all()
-    residence_list = [
+         new_booking = Booking(
+            user_id=data['user_id'],
+            quote_id=data['quote_id'],
+            booking_status=data['booking_status'],
+            moving_date=moving_date,
+            moving_time=moving_time,
+            residence_type_id=data['residence_type_id']
+         )
+
+         db.session.add(new_booking)
+         db.session.commit()
+         return jsonify({'message': 'Booking created successfully'}), 201
+api.add_resource(BookingResource, '/bookings')    
+
+# Endpoint for all residences
+class ResidenceResource(Resource):
+    def get(self):
+        residences = Residence.query.all()
+        residence_list = [
         {'id': res.id, 'name': res.name}
         for res in residences
     ]
-    return jsonify({'residences': residence_list})
+        return jsonify({'residences': residence_list})
 
-# Endpoint to create a new user
-@app.route('/users', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    new_user = User(
-        username=data['username'],
-        email=data['email'],
-        password=data['password']
-    )
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
-
-# Endpoint to create a new inventory item
-@app.route('/inventory', methods=['POST'])
-def create_inventory_item():
-    data = request.get_json()
-    new_inventory_item = Inventory(
-        residence_type_id=data['residence_type_id'],
-        item=data['item'],
-        quantity=data['quantity'],
-        user_id=data['user_id']
-    )
-    db.session.add(new_inventory_item)
-    db.session.commit()
-    return jsonify({'message': 'Inventory item created successfully'}), 201
-
-# Endpoint to create a new location
-@app.route('/locations', methods=['POST'])
-def create_location():
-    data = request.get_json()
-    new_location = Location(
-        current_address=data['current_address'],
-        new_address=data['new_address'],
-        user_id=data['user_id']
-    )
-    db.session.add(new_location)
-    db.session.commit()
-    return jsonify({'message': 'Location created successfully'}), 201
-
-# Endpoint to create a new notification
-@app.route('/notifications', methods=['POST'])
-def create_notification():
-    data = request.get_json()
-    new_notification = Notification(
-        user_id=data['user_id'],
-        notification_type=data['notification_type'],
-        content=data['content']
-    )
-    db.session.add(new_notification)
-    db.session.commit()
-    return jsonify({'message': 'Notification created successfully'}), 201
-
-# Endpoint to create a new moving company
-@app.route('/moving_companies', methods=['POST'])
-def create_moving_company():
-    data = request.get_json()
-    new_moving_company = MovingCompany(
-        company_name=data['company_name'],
-        contact_person=data['contact_person'],
-        contact_email=data['contact_email'],
-        contact_phone=data['contact_phone']
-    )
-    db.session.add(new_moving_company)
-    db.session.commit()
-    return jsonify({'message': 'Moving company created successfully'}), 201
-
-# Endpoint to create a new quote
-@app.route('/quotes', methods=['POST'])
-def create_quote():
-    data = request.get_json()
-    new_quote = Quote(
-        company_id=data['company_id'],
-        user_id=data['user_id'],
-        quote_amount=data['quote_amount'],
-        residence_type_id=data['residence_type_id']
-    )
-    db.session.add(new_quote)
-    db.session.commit()
-    return jsonify({'message': 'Quote created successfully'}), 201
-
-# Endpoint to create a new booking
-
-@app.route('/bookings', methods=['POST'])
-def create_booking():
-    data = request.get_json()
-    moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
-    moving_time = datetime.strptime(data['moving_time'], '%H:%M').time()
-
-    new_booking = Booking(
-        user_id=data['user_id'],
-        quote_id=data['quote_id'],
-        booking_status=data['booking_status'],
-        moving_date=moving_date,
-        moving_time=moving_time,
-        residence_type_id=data['residence_type_id']
-    )
-
-    db.session.add(new_booking)
-    db.session.commit()
-    return jsonify({'message': 'Booking created successfully'}), 201
-
-# Endpoint to create a new residence
-@app.route('/residences', methods=['POST'])
-def create_residence():
-    data = request.get_json()
-    new_residence = Residence(
+    def post(self):
+        data = request.get_json()
+        new_residence = Residence(
         name=data['name']
     )
-    db.session.add(new_residence)
-    db.session.commit()
-    return jsonify({'message': 'Residence created successfully'}), 201
+        db.session.add(new_residence)
+        db.session.commit()
+        return jsonify({'message': 'Residence created successfully'}), 201
+api.add_resource(ResidenceResource, '/residences')
+
+class CustomerResource(Resource):
+    def get(self):
+        customers = Customer.query.all()
+        customer_list = [
+            {
+                'user_id': customer.user_id,
+                'full_name': customer.full_name,
+                'contact_phone': customer.contact_phone,
+                'email': customer.email,
+                'address': customer.address,
+                'preferred_contact_method': customer.preferred_contact_method
+            }
+            for customer in customers
+        ]
+        return jsonify({'customers': customer_list})
+
+    def post(self):
+        data = request.get_json()
+        new_customer = Customer(
+            user_id=data['user_id'],
+            full_name=data['full_name'],
+            contact_phone=data['contact_phone'],
+            email=data['email'],
+            address=data['address'],
+            preferred_contact_method=data['preferred_contact_method']
+        )
+        db.session.add(new_customer)
+        db.session.commit()
+        return jsonify({'message': 'Customer created successfully'}), 201
+
+api.add_resource(CustomerResource, '/customers')
 
 # Endpoint to update a user by ID
 @app.route('/users/<int:user_id>', methods=['PUT'])
@@ -398,6 +416,7 @@ def update_location(location_id):
         data = request.get_json()
         location.current_address = data.get('current_address', location.current_address)
         location.new_address = data.get('new_address', location.new_address)
+        location.distance = data.get('distance', location.distance)
         location.user_id = data.get('user_id', location.user_id)
         db.session.commit()
         return jsonify({'message': 'Location updated successfully'}), 200
