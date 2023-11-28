@@ -69,12 +69,14 @@ with app.app_context():
     location1 = Location(
         current_address="wahiyaki highway",
         new_address="Ngong street 11",
+        distance="200",
         user=user1
     )
 
     location2 = Location(
         current_address="Thika road 34",
         new_address="parklands street 2",
+        distance="200",
         user=user2
     )
 
