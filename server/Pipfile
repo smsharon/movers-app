@@ -13,6 +13,7 @@ wtforms = "*"
 flask-login = "*"
 flask-migrate = "*"
 email-validator = "*"
+sqlalchemy-serializer = "*"
 
 [dev-packages]
 
