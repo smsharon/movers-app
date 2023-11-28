@@ -1,32 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const MovingPriceCalculator = ({ distance }) => {
- const [residenceType, setResidenceType] = useState('bedsitter');
+const MovingPriceCalculator = () => {
+  const [residenceType, setResidenceType] = useState('bedsitter');
+  const [startAddress, setStartAddress] = useState('');
+  const [endAddress, setEndAddress] = useState('');
+  const [distance, setDistance] = useState(null);
+  const [estimatedPrice, setEstimatedPrice] = useState(null);
 
- const calculatePrice = () => {
-    const distanceRate = 200; // Rate per mile
-    const basePrice = 500;     // Base price
+  useEffect(() => {
+    // Fetch names and distance from backend when the component mounts
+    fetchDistanceAndNamesFromBackend();
+  }, []);
 
-    let residenceTypeRate = 1.0; // Default rate for bedsitter
+  const fetchDistanceAndNamesFromBackend = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers, such as authorization token, if needed
+        },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        setDistance(data.distance);
+        setStartAddress(data.startAddress);
+        setEndAddress(data.endAddress);
+      } else {
+        console.error('Failed to fetch data from the backend.');
+        // Handle error as needed
+      }
+    } catch (error) {
+      console.error('Error while fetching data:', error);
+      // Handle error as needed
+    }
+  };
+
+  const calculatePrice = () => {
+    const distanceRate = 200; // Rate per km
+    const basePrice = 2000;    // Base price
+
+    let residenceTypeRate = 1.2; // Default rate for bedsitter
     if (residenceType === 'oneBedroom') {
-      residenceTypeRate = 1.2;
+      residenceTypeRate = 2.0;
     } else if (residenceType === 'studio') {
-      residenceTypeRate = 1.1;
+      residenceTypeRate = 1.6;
     } else if (residenceType === 'twoBedroom') {
-      residenceTypeRate = 1.3;
+      residenceTypeRate = 2.5;
     }
 
     const totalPrice = basePrice + (distance * distanceRate) * residenceTypeRate;
 
     return totalPrice;
- };
+  };
 
- const handleCalculatePrice = () => {
+  const handleCalculatePrice = () => {
     const totalPrice = calculatePrice();
-    console.log(`Estimated Price: $${totalPrice.toFixed(2)}`);
- };
+    setEstimatedPrice(totalPrice.toFixed(2));
+  };
 
- return (
+  return (
     <div>
       <h2>Moving Price Calculator</h2>
       <label>
@@ -38,15 +72,23 @@ const MovingPriceCalculator = ({ distance }) => {
           <option value="twoBedroom">Two Bedroom</option>
         </select>
       </label>
-      <p>Distance: {distance} miles</p>
-      <button onClick={handleCalculatePrice}>Calculate Moving Price</button>
-      {distance !== null && (
-        <p>
-          Estimated Price: ${calculatePrice().toFixed(2)}
-        </p>
+      {distance !== null && startAddress && endAddress ? (
+        <>
+          <p>
+            Move from {startAddress} to {endAddress} ({distance} miles)
+          </p>
+          <button onClick={handleCalculatePrice}>Calculate Moving Price</button>
+          {estimatedPrice !== null && (
+            <p>
+              Estimated Price: ${estimatedPrice}
+            </p>
+          )}
+        </>
+      ) : (
+        <p>Loading data...</p>
       )}
     </div>
- );
+  );
 };
 
 export default MovingPriceCalculator;

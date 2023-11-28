@@ -1,13 +1,14 @@
-import logo from './logo.svg';
-import './App.css';
 import LocationCalculator from './Components/Location';
-import MovingPriceCalculator from './Components/MovingPriceCalculator';
+// import MovingPriceCalculator from './Components/MovingPriceCalculator';
+// import ColorSchemesExample from './Components/Navbar';
 
 function App() {
   return (
     <div className="App">
+      
        <LocationCalculator/>
-       <MovingPriceCalculator/>
+       {/* <MovingPriceCalculator/>
+       <ColorSchemesExample/> */}
     </div>
   );
 }
