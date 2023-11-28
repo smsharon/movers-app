@@ -80,7 +80,7 @@ class MovingCompany(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     company_name = db.Column(db.String(100), nullable=False)
     contact_person = db.Column(db.String(50))
-    contact_email = db.Column(db.String(100))
+    contact_email = db.Column(db.String(100), unique=True, nullable=False)
     contact_phone = db.Column(db.String(20))
     extra_services = db.Column(db.String(50), nullable=False)
     #service_area = db.Column(db.String(120), nullable=False)
@@ -128,7 +128,7 @@ class Customer(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     contact_phone = db.Column(db.String(20))
-    email = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
     address = db.Column(db.String(200))
     preferred_contact_method = db.Column(db.String(20))
     
