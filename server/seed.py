@@ -1,6 +1,6 @@
 from app import app
 from datetime import datetime, time
-from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence
+from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence, Customer
 
 with app.app_context():
 
@@ -13,20 +13,24 @@ with app.app_context():
     db.session.query(Quote).delete()
     db.session.query(Booking).delete()
     db.session.query(Residence).delete()
+    db.session.query(Customer).delete()
 
     # Add users
     user1 = User(
         id = 1,
         username="shallon",
         email="shallon@gmail.com",
-        password="password"
+        password="Said@8354",
+        role="customer"
+        
     )
 
     user2 = User(
         id = 2,
         username="kelvin",
         email="kelvin@gmail.com",
-        password="password"
+        password="Kelvin@2010",
+        role="customer"
     )
 
     # Add residences
@@ -53,15 +57,11 @@ with app.app_context():
     # Add inventory items
     inventory_item1 = Inventory(
         residence_type_id=residence1.id,
-        item="Sofa",
-        quantity=2,
         user=user1
     )
 
     inventory_item2 = Inventory(
         residence_type_id=residence1.id,
-        item="Bed",
-        quantity=1,
         user=user2
     )
 
@@ -94,18 +94,22 @@ with app.app_context():
     # Add moving companies
     company1 = MovingCompany(
         id =1,
+        user_id=user1.id,
         company_name="Tusonge",
         contact_person="John Doe",
         contact_email="tusongeservices@gmail.com",
-        contact_phone="+254712345678"
+        contact_phone="+254712345678",
+        extra_services="Packing"
     )
 
     company2 = MovingCompany(
         id = 2,
+        user_id=user2.id,
         company_name="Tuvybe",
         contact_person="Jane Doe",
         contact_email="tuvybeservices@gmail.com",
-        contact_phone="+254758793099"
+        contact_phone="+254758793099",
+        extra_services="Storage"
     )
 
     # Add quotes
@@ -144,6 +148,27 @@ with app.app_context():
         residence_type_id=residence2.id 
     )
 
+     # Add customers
+    customer1 = Customer(
+        id=1,
+        user_id=user1.id,
+        full_name="Shallon Customer",
+        contact_phone="+254712345678",
+        email="shallon@gmail.com",
+        address="Ngong Street 11",
+        preferred_contact_method="email"
+    )
+
+    customer2 = Customer(
+        id=2,
+        user_id=user2.id,
+        full_name="Kelvin Customer",
+        contact_phone="+254758793099",
+        email="kelvin@gmail.com",
+        address="Parklands Street 2",
+        preferred_contact_method="phone"
+    )
+
     # Add all records to the session
     db.session.add_all([
         user1, user2,
@@ -153,7 +178,8 @@ with app.app_context():
         notification1, notification2,
         company1, company2,
         quote1, quote2,
-        booking1, booking2
+        booking1, booking2,
+        customer1, customer2
     ])
 
     # Commit changes to the database
