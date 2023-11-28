@@ -2,6 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask, request, jsonify
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.orm import validates
+import re
+
 
 
 db = SQLAlchemy()
@@ -24,6 +27,25 @@ class User(db.Model,SerializerMixin):
 
     # Relationship specific to Customer
     customer = db.relationship('Customer', back_populates='user', uselist=False)
+    
+    #validations
+    @validates('email')
+    def validate_email(self, key, email):
+        if '@' not in email:
+            raise AssertionError('Provided email is not valid.')
+        return email
+
+    @validates('password')
+    def validate_password(self, key, password):
+        if not re.search(r"[A-Z]", password):
+            raise AssertionError('Password must contain at least one uppercase letter.')
+        if not re.search(r"[a-z]", password):
+            raise AssertionError('Password must contain at least one lowercase letter.')
+        if not re.search(r"[0-9]", password):
+            raise AssertionError('Password must contain at least one digit.')
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            raise AssertionError('Password must contain at least one special character.')
+        return password
     
 
 class Inventory(db.Model,SerializerMixin):
