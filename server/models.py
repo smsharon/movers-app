@@ -2,6 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask, request, jsonify
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.orm import validates
+import re
+
 
 
 db = SQLAlchemy()
@@ -24,6 +27,25 @@ class User(db.Model,SerializerMixin):
 
     # Relationship specific to Customer
     customer = db.relationship('Customer', back_populates='user', uselist=False)
+    
+    #validations
+    @validates('email')
+    def validate_email(self, key, email):
+        if '@' not in email:
+            raise AssertionError('Provided email is not valid.')
+        return email
+
+    @validates('password')
+    def validate_password(self, key, password):
+        if not re.search(r"[A-Z]", password):
+            raise AssertionError('Password must contain at least one uppercase letter.')
+        if not re.search(r"[a-z]", password):
+            raise AssertionError('Password must contain at least one lowercase letter.')
+        if not re.search(r"[0-9]", password):
+            raise AssertionError('Password must contain at least one digit.')
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            raise AssertionError('Password must contain at least one special character.')
+        return password
     
 
 class Inventory(db.Model,SerializerMixin):
@@ -58,9 +80,9 @@ class MovingCompany(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     company_name = db.Column(db.String(100), nullable=False)
     contact_person = db.Column(db.String(50))
-    contact_email = db.Column(db.String(100))
+    contact_email = db.Column(db.String(100), unique=True, nullable=False)
     contact_phone = db.Column(db.String(20))
-    extra_services = db.Column(db.String(50), nullable=False)
+    extra_services = db.Column(db.String(50), nullable=True)
     #service_area = db.Column(db.String(120), nullable=False)
 
     #relationships
@@ -106,7 +128,7 @@ class Customer(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     full_name = db.Column(db.String(100), nullable=False)
     contact_phone = db.Column(db.String(20))
-    email = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
     address = db.Column(db.String(200))
     preferred_contact_method = db.Column(db.String(20))
     

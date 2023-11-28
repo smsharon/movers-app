@@ -20,7 +20,7 @@ with app.app_context():
         id = 1,
         username="shallon",
         email="shallon@gmail.com",
-        password="password",
+        password="Said@8354",
         role="customer"
         
     )
@@ -29,7 +29,7 @@ with app.app_context():
         id = 2,
         username="kelvin",
         email="kelvin@gmail.com",
-        password="password",
+        password="Kelvin@2010",
         role="customer"
     )
 
