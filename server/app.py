@@ -200,7 +200,7 @@ class LocationResource(Resource):
         )
         db.session.add(new_location)
         db.session.commit()
-        return jsonify({'message': 'Location created successfully'}), 201
+        return {'message': 'Location created successfully'}, 201
 
 api.add_resource(LocationResource, '/locations')
 
