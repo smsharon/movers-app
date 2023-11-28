@@ -379,77 +379,85 @@ class CustomerResource(Resource):
 
 api.add_resource(CustomerResource, '/customers')
 
-# Endpoint to update a user by ID
-@app.route('/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    user = User.query.get(user_id)
-    if user:
-        data = request.get_json()
-        user.username = data.get('username', user.username)
-        user.email = data.get('email', user.email)
-        user.password = data.get('password', user.password)
-        db.session.commit()
-        return jsonify({'message': 'User updated successfully'}), 200
-    else:
-        return jsonify({'error': 'User not found'}), 404
+# Update user by ID
+class UpdateUserResource(Resource):
+    def put(self, user_id):
+        user = User.query.get(user_id)
+        if user:
+            data = request.get_json()
+            user.username = data.get('username', user.username)
+            user.email = data.get('email', user.email)
+            user.password = data.get('password', user.password)
+            user.role = data.get('role', user.role)
+            db.session.commit()
+            return jsonify({'message': 'User updated successfully'}), 200
+        else:
+            return jsonify({'error': 'User not found'}), 404
+
+api.add_resource(UpdateUserResource, '/users/<int:user_id>')
 
 # Endpoint to update an inventory item by ID
-@app.route('/inventory/<int:item_id>', methods=['PUT'])
-def update_inventory_item(item_id):
-    inventory_item = Inventory.query.get(item_id)
-    if inventory_item:
-        data = request.get_json()
-        inventory_item.residence_type_id = data.get('residence_type_id', inventory_item.residence_type_id)
-        inventory_item.item = data.get('item', inventory_item.item)
-        inventory_item.quantity = data.get('quantity', inventory_item.quantity)
-        inventory_item.user_id = data.get('user_id', inventory_item.user_id)
-        db.session.commit()
-        return jsonify({'message': 'Inventory item updated successfully'}), 200
-    else:
-        return jsonify({'error': 'Inventory item not found'}), 404
+class UpdateInventoryResource(Resource):
+    def put(self, item_id):
+        inventory_item = Inventory.query.get(item_id)
+        if inventory_item:
+            data = request.get_json()
+            inventory_item.residence_type_id = data.get('residence_type_id', inventory_item.residence_type_id)
+            inventory_item.user_id = data.get('user_id', inventory_item.user_id)
+            db.session.commit()
+            return jsonify({'message': 'Inventory item updated successfully'}), 200
+        else:
+            return jsonify({'error': 'Inventory item not found'}), 404
+
+api.add_resource(UpdateInventoryResource, '/inventory/<int:item_id>')
+
 
 # Endpoint to update a location by ID
-@app.route('/locations/<int:location_id>', methods=['PUT'])
-def update_location(location_id):
-    location = Location.query.get(location_id)
-    if location:
-        data = request.get_json()
-        location.current_address = data.get('current_address', location.current_address)
-        location.new_address = data.get('new_address', location.new_address)
-        location.distance = data.get('distance', location.distance)
-        location.user_id = data.get('user_id', location.user_id)
-        db.session.commit()
-        return jsonify({'message': 'Location updated successfully'}), 200
-    else:
-        return jsonify({'error': 'Location not found'}), 404
+class UpdateLocationResource(Resource):
+    def put(self, location_id):
+        location = Location.query.get(location_id)
+        if location:
+            data = request.get_json()
+            location.current_address = data.get('current_address', location.current_address)
+            location.new_address = data.get('new_address', location.new_address)
+            location.distance = data.get('distance', location.distance)
+            location.user_id = data.get('user_id', location.user_id)
+            db.session.commit()
+            return jsonify({'message': 'Location updated successfully'}), 200
+        else:
+            return jsonify({'error': 'Location not found'}), 404
 
+api.add_resource(UpdateLocationResource, '/locations/<int:location_id>')
 # Endpoint to update a booking by ID
-@app.route('/bookings/<int:booking_id>', methods=['PUT'])
-def update_booking(booking_id):
-    booking = Booking.query.get(booking_id)
-    
-    if booking:
-        data = request.get_json()
-        
-        try:
-            moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
-            moving_time = datetime.strptime(data['moving_time'], '%H:%M:%S').time()
-        except ValueError as e:
-            return jsonify({'error': f'Error parsing date or time: {str(e)}'}), 400
-        
-        # Update individual attributes using setattr
-        setattr(booking, 'moving_date', moving_date)
-        setattr(booking, 'user_id', data.get('user_id', booking.user_id))
-        setattr(booking, 'quote_id', data.get('quote_id', booking.quote_id))
-        setattr(booking, 'booking_status', data.get('booking_status', booking.booking_status))
-        setattr(booking, 'moving_time', moving_time)
-        setattr(booking, 'residence_type_id', data.get('residence_type_id', booking.residence_type_id))
-        
-        db.session.commit()
-        
-        return jsonify({'message': 'Booking updated successfully'}), 200
-    else:
-        return jsonify({'error': 'Booking not found'}), 404
+class UpdateBookingResource(Resource):
+    def put(self, booking_id):
+        booking = Booking.query.get(booking_id)
+
+        if booking:
+            data = request.get_json()
+
+            try:
+                moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
+                moving_time = datetime.strptime(data['moving_time'], '%H:%M:%S').time()
+            except ValueError as e:
+                return jsonify({'error': f'Error parsing date or time: {str(e)}'}), 400
+
+            # Update individual attributes using setattr
+            setattr(booking, 'moving_date', moving_date)
+            setattr(booking, 'user_id', data.get('user_id', booking.user_id))
+            setattr(booking, 'quote_id', data.get('quote_id', booking.quote_id))
+            setattr(booking, 'booking_status', data.get('booking_status', booking.booking_status))
+            setattr(booking, 'moving_time', moving_time)
+            setattr(booking, 'residence_type_id', data.get('residence_type_id', booking.residence_type_id))
+
+            db.session.commit()
+
+            return jsonify({'message': 'Booking updated successfully'}), 200
+        else:
+            return jsonify({'error': 'Booking not found'}), 404
+
+api.add_resource(UpdateBookingResource, '/bookings/<int:booking_id>')
+
 # Endpoint to delete a user by ID
 @app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
