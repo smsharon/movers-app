@@ -1,19 +1,54 @@
-import Container from 'react-bootstrap/Container';
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { NavDropdown } from 'react-bootstrap';  // Update this import
 
-function ColorSchemesExample() {
+const Navbar = () => {
   return (
-      <Navbar bg="grey" data-bs-theme="grey">
-        <Container>
-          <Nav className="me-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#features">Features</Nav.Link>
-            <Nav.Link href="#pricing">Pricing</Nav.Link>
-          </Nav>
-        </Container>
-      </Navbar>  
-  );
-}
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+      <Link className="navbar-brand" to="/">BoxdNLoaded</Link>
+      <button
+        className="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span className="navbar-toggler-icon"></span>
+      </button>
 
-export default ColorSchemesExample;
+  <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul className="navbar-nav ml-auto">
+      <li className="nav-item">
+        <Link className="nav-link" to="/inventory">
+          Inventory
+        </Link>
+      </li>
+      <li className="nav-item">
+        <Link className="nav-link" to="/quotes">
+          Quotes
+        </Link>
+      </li>
+      <li className="nav-item dropdown">
+        <NavDropdown
+          title="Account"
+          id="navbarDropdown"
+          className="nav-dropdown"
+        >
+          <Link className="dropdown-item" to="/signup">
+            Signup
+          </Link>
+          <Link className="dropdown-item" to="/login">
+            Login
+          </Link>
+        </NavDropdown>
+      </li>
+    </ul>
+  </div>
+</nav>
+  );
+};
+
+export default Navbar;
