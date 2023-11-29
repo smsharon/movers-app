@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: c99b8cfb4fc0
+Revision ID: 22f4d7514b59
 Revises: 
-Create Date: 2023-11-27 23:31:33.735075
+Create Date: 2023-11-28 18:59:49.869390
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c99b8cfb4fc0'
+revision = '22f4d7514b59'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -43,7 +43,8 @@ def upgrade():
     sa.Column('address', sa.String(length=200), nullable=True),
     sa.Column('preferred_contact_method', sa.String(length=20), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email')
     )
     op.create_table('inventory',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -57,6 +58,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('current_address', sa.String(length=100), nullable=False),
     sa.Column('new_address', sa.String(length=100), nullable=False),
+    sa.Column('distance', sa.Float(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -66,11 +68,12 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('company_name', sa.String(length=100), nullable=False),
     sa.Column('contact_person', sa.String(length=50), nullable=True),
-    sa.Column('contact_email', sa.String(length=100), nullable=True),
+    sa.Column('contact_email', sa.String(length=100), nullable=False),
     sa.Column('contact_phone', sa.String(length=20), nullable=True),
-    sa.Column('extra_services', sa.String(length=50), nullable=False),
+    sa.Column('extra_services', sa.String(length=50), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('contact_email')
     )
     op.create_table('notification',
     sa.Column('id', sa.Integer(), nullable=False),
