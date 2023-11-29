@@ -31,6 +31,11 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+class SignupForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=50)])
+    email = StringField('Email', validators=[InputRequired(), Email(), Length(max=100)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=100)])
+    role = StringField('Role', validators=[InputRequired(), Length(max=20)])
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -49,6 +54,28 @@ def logout():
     logout_user()
     return jsonify({'message': 'Logout successful'}), 200
 
+@app.route('/signup', methods=['POST'])
+def signup():
+    form = SignupForm(request.form)
+    if not form.validate():
+        return jsonify({'error': 'Invalid input. Please check your input and try again.'}), 400
+
+    existing_user = User.query.filter_by(email=form.email.data).first()
+
+    if existing_user:
+        return jsonify({'error': 'email already exists. Choose a different email.'}), 400
+
+    new_user = User(
+        username=form.username.data,
+        email=form.email.data,
+        password=form.password.data,
+        role=form.role.data
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User created successfully'}), 201
+
 class IndexResource(Resource):
     def get(self):
         return jsonify({'message': 'Welcome to BoxdNLoaded!!!'})
@@ -64,6 +91,10 @@ class UserResource(Resource):
 
     def post(self):
         data = request.get_json()
+        existing_user = User.query.filter_by(email=data['email']).first()
+
+        if existing_user:
+            return jsonify({'error': 'Email already exists. Choose a different Email.'}), 400
         new_user = User(
             username=data['username'],
             email=data['email'],
