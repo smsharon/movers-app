@@ -134,7 +134,7 @@ class Customer(db.Model, SerializerMixin):
     
     # Relationships
     user = db.relationship('User', back_populates='customer')
-
+    
 
 
 
