@@ -32,6 +32,22 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if user and user.check_password(data['password']):
+        login_user(user)
+        return jsonify({'message': 'Login successful'}), 200
+    else:
+        return jsonify({'error': 'Invalid username or password'}), 401
+    
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return jsonify({'message': 'Logout successful'}), 200
 
 class IndexResource(Resource):
     def get(self):
