@@ -56,26 +56,35 @@ def logout():
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    form = SignupForm(request.form)
-    if not form.validate():
-        return jsonify({'error': 'Invalid input. Please check your input and try again.'}), 400
+    data = request.get_json()
 
-    existing_user = User.query.filter_by(email=form.email.data).first()
+    # Check if the role is provided
+    role = data.get('role')
+    if role not in ['customer', 'moving_company']:
+        return jsonify({'error': 'Invalid role'}), 400
 
+    # Check if the email already exists
+    existing_user = User.query.filter_by(email=data['email']).first()
     if existing_user:
-        return jsonify({'error': 'email already exists. Choose a different email.'}), 400
-    hashed_password = generate_password_hash(form.password.data, method='sha256')
+        return jsonify({'error': 'Email already exists. Choose a different email.'}), 400
 
+    # Hash the password
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
+
+
+    # Create a new user based on the role
     new_user = User(
-        username=form.username.data,
-        email=form.email.data,
+        username=data['username'],
+        email=data['email'],
         password=hashed_password,
-        role=form.role.data
+        role=role
     )
 
     db.session.add(new_user)
     db.session.commit()
+
     return jsonify({'message': 'User created successfully'}), 201
+
 
 class IndexResource(Resource):
     def get(self):
