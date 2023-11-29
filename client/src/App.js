@@ -1,23 +1,31 @@
-// App.js
 import React from 'react';
-// import { Route, Routes } from 'react-router-dom';
-import Signup from './Signup';
-import Login from './Login';
+import { Link } from 'react-router-dom';
+import Navbar from './Navbar';
+import Landingpage from './Landingpage';
+import Booking from './Booking'; // Import the Booking component
 
-function App() {
+const CombinedPage = () => {
   return (
-    <div className="App">
-      {/* <Login/>  */}
-      <Signup/>
-    {/* <Routes>
-      <Route>
-          <Route path="/" component={SignUp} />
-          <Route path="/login" component={Login} />
-          </Route>
-    </Routes> */}
+    <div style={{ display: 'flex' }}>
+      {/* Content section */}
+      <div style={{ flex: 1, padding: '20px' }}>
+        {/* Landingpage component */}
+        <Landingpage />
+
+        {/* Booking component */}
+        <Booking />
+      </div>
+
+      {/* Navbar component on the right */}
+      <div style={{ width: '200px', padding: '20px' }}>
+        <Navbar />
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default CombinedPage;
+
+
+
 
