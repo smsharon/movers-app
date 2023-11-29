@@ -25,102 +25,13 @@ login_manager = LoginManager(app)
 
 # Flask-Login setup
 login_manager.login_view = 'login'
-login_manager.login_message_category = 'info'
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Define the SignupForm
-class SignupForm(FlaskForm):
-    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=50)])
-    email = StringField('Email', validators=[InputRequired(), Email(), Length(max=100)])
-    password = PasswordField('Password', validators=[InputRequired(), Length(min=6, max=100)])
-    submit = SubmitField('Sign Up')
 
-# Define the LoginForm
-class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=50)])
-    password = PasswordField('Password', validators=[InputRequired(), Length(min=6, max=100)])
-    submit = SubmitField('Login')
-
-# Endpoint to get CSRF token
-@app.route('/csrf_token', methods=['GET'])
-def get_csrf_token():
-    csrf_token = generate_csrf()
-    return jsonify({'token': csrf_token})
-
-# Endpoint to create a new user
-@app.route('/signup', methods=['POST'])
-def signup():
-    data = request.get_json()
-    form = SignupForm(data=data)
-
-    if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-        return jsonify({'message': 'User created successfully'}), 201
-    else:
-        csrf_token = generate_csrf()
-        response = jsonify({'error': 'Validation failed', 'details': form.errors})
-        response.headers['X-CSRFToken'] = csrf_token
-        return response, 400
-
-# Route for user login
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    form = LoginForm(data=data)
-
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and check_password_hash(user.password, form.password.data):
-            login_user(user, remember=True)
-            return jsonify({'message': 'Login successful', 'user_id': user.id}), 200
-        else:
-            # Include the CSRF token in the response headers
-            csrf_token = generate_csrf()
-            response = jsonify({'error': 'Invalid username or password'})
-            response.headers['X-CSRFToken'] = csrf_token
-            return response, 401
-    else:
-        # Include the CSRF token in the response headers
-        csrf_token = generate_csrf()
-        response = jsonify({'error': 'Validation failed', 'details': form.errors})
-        response.headers['X-CSRFToken'] = csrf_token
-        return response, 400
-
-@app.route('/logout', methods=['POST'])
-@login_required
-def logout():
-    logout_user()
-    return jsonify({'message': 'Logout successful'}), 200
-
-# Authentication resource
-class Auth(Resource):
-
-    def post(self):
-        form = LoginForm(data=request.get_json())
-        if form.validate_on_submit():
-            user = User.query.filter_by(username=form.username.data).first()
-            if user and check_password_hash(user.password, form.password.data):
-                login_user(user)
-                return {"message": "Logged in successfully!"}, 200
-            return {"message": "Invalid credentials!"}, 401
-        return {"message": "Invalid input!", "errors": form.errors}, 400
-
-    @login_required
-    def get(self):
-        return {
-            "id": current_user.id,
-            "username": current_user.username,
-            "email": current_user.email
-        }, 200
-
-# Add resources to the API
-api.add_resource(Auth, '/auth')
 
 class IndexResource(Resource):
     def get(self):
@@ -235,7 +146,10 @@ api.add_resource(NotificationResource, '/notifications')
 
 # Endpoints for moving companies
 class MovingCompanyResource(Resource):
+    @login_required
     def get(self):
+        if current_user.role != 'moving_company':
+            return jsonify({'error': 'Unauthorized access'}), 403
         companies = MovingCompany.query.all()
         company_list = [
         {
@@ -257,7 +171,8 @@ class MovingCompanyResource(Resource):
         contact_person=data['contact_person'],
         contact_email=data['contact_email'],
         contact_phone=data['contact_phone'],
-        extra_services=data['extra_services']
+        extra_services=data['extra_services'],
+        user=current_user
     )
         db.session.add(new_moving_company)
         db.session.commit()
@@ -348,7 +263,11 @@ class ResidenceResource(Resource):
 api.add_resource(ResidenceResource, '/residences')
 
 class CustomerResource(Resource):
+    @login_required
     def get(self):
+        if current_user.role != 'customer':
+            return jsonify({'error': 'Unauthorized access'}), 403
+
         customers = Customer.query.all()
         customer_list = [
             {
@@ -371,7 +290,8 @@ class CustomerResource(Resource):
             contact_phone=data['contact_phone'],
             email=data['email'],
             address=data['address'],
-            preferred_contact_method=data['preferred_contact_method']
+            preferred_contact_method=data['preferred_contact_method'],
+            user=current_user
         )
         db.session.add(new_customer)
         db.session.commit()
