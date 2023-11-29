@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const SignupForm = ({ onSignup }) => {
+const SignupForm = () => {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -9,6 +9,8 @@ const SignupForm = ({ onSignup }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
 
   const handleChange = (e) => {
     setFormData({
@@ -36,7 +38,10 @@ const SignupForm = ({ onSignup }) => {
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
+      if (response.ok) {
+        setSuccessMessage('Signup successful');
+        setError(null);
+      } else {
         const errorData = await response.json();
         setError(errorData.error || 'Signup failed');
       }
@@ -47,8 +52,10 @@ const SignupForm = ({ onSignup }) => {
       setLoading(false);
     }
   };
+
   return (
     <form onSubmit={handleSubmit}>
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       <label>
         Username:
         <input type="text" name="username" value={formData.username} onChange={handleChange} />
