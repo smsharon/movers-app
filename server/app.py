@@ -42,7 +42,7 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
     
-    if user and user.check_password(data['password']):
+    if user and check_password_hash(user.password, data['password']):
         login_user(user)
         return jsonify({'message': 'Login successful'}), 200
     else:
@@ -64,11 +64,12 @@ def signup():
 
     if existing_user:
         return jsonify({'error': 'email already exists. Choose a different email.'}), 400
+    hashed_password = generate_password_hash(form.password.data, method='sha256')
 
     new_user = User(
         username=form.username.data,
         email=form.email.data,
-        password=form.password.data,
+        password=hashed_password,
         role=form.role.data
     )
 
