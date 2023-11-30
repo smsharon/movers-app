@@ -1,54 +1,75 @@
-
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { bookMove } from '../redux/bookingSlice';
 
-const Booking = () => {
-  const dispatch = useDispatch();
-
-  const [movingDate, setMovingDate] = useState('');
+const BookingPage = () => {
   const [movingTime, setMovingTime] = useState('');
+  const [movingDate, setMovingDate] = useState('');
+  const [locationFrom, setLocationFrom] = useState('');
+  const [locationTo, setLocationTo] = useState('');
 
-  
-  const user = useSelector((state) => state.user);
-  const inventory = useSelector((state) => state.inventory);
+  const handleBookingSubmit = (e) => {
+    e.preventDefault();
 
-  const handleBooking = () => {
-    // Dispatch the booking action with the selected date and time
-    dispatch(bookMove({ movingDate, movingTime, user, inventory }));
+    // You can perform actions with the booking details here
+
+    // For now, let's just log the details
+    console.log('Moving Time:', movingTime);
+    console.log('Moving Date:', movingDate);
+    console.log('Location From:', locationFrom);
+    console.log('Location To:', locationTo);
   };
 
   return (
     <div>
-      <h2>Confirm Your Booking</h2>
+      <h2>Moving Booking</h2>
+      <form onSubmit={handleBookingSubmit}>
+        <label>
+          Moving Time:
+          <input
+            type="time"
+            value={movingTime}
+            onChange={(e) => setMovingTime(e.target.value)}
+            required
+          />
+        </label>
+        <br />
 
-      {/* Form for selecting moving date and time */}
-      <div>
-        <label htmlFor="movingDate">Moving Date:</label>
-        <input
-          type="date"
-          id="movingDate"
-          value={movingDate}
-          onChange={(e) => setMovingDate(e.target.value)}
-        />
-      </div>
+        <label>
+          Moving Date:
+          <input
+            type="date"
+            value={movingDate}
+            onChange={(e) => setMovingDate(e.target.value)}
+            required
+          />
+        </label>
+        <br />
 
-      <div>
-        <label htmlFor="movingTime">Moving Time:</label>
-        <input
-          type="time"
-          id="movingTime"
-          value={movingTime}
-          onChange={(e) => setMovingTime(e.target.value)}
-        />
-      </div>
+        <label>
+          Location From:
+          <input
+            type="text"
+            value={locationFrom}
+            onChange={(e) => setLocationFrom(e.target.value)}
+            required
+          />
+        </label>
+        <br />
 
-      {/* Display other relevant information, such as pricing or inventory details */}
+        <label>
+          Location To:
+          <input
+            type="text"
+            value={locationTo}
+            onChange={(e) => setLocationTo(e.target.value)}
+            required
+          />
+        </label>
+        <br />
 
-      {/* Button to confirm booking */}
-      <button onClick={handleBooking}>Confirm Booking</button>
+        <button type="submit">Book Now</button>
+      </form>
     </div>
   );
 };
 
-export default Booking;
+export default BookingPage;
