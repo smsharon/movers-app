@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 const LocationCalculator = () => {
   const [startCity, setStartCity] = useState('');
   const [endCity, setEndCity] = useState('');
-  const [user_id, setUserId] = useState('');
   const [distance, setDistance] = useState(null);
   const [validated, setValidated] = useState(false);
 
@@ -50,9 +49,9 @@ const LocationCalculator = () => {
     }
   };
 
-  const sendDistanceToBackend = async (currentAddress, newAddress, distance ,user_id) => {
+  const sendDistanceToBackend = async (currentAddress, newAddress, distance) => {
     try {
-      const response = await fetch('/location', {
+      const response = await fetch('/locations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +60,7 @@ const LocationCalculator = () => {
           current_address: currentAddress,
           new_address: newAddress,
           distance: distance,
-          user_id: user_id,
+          
         }),
       });
 
@@ -119,21 +118,7 @@ const LocationCalculator = () => {
             <div className="invalid-feedback">Please enter the end city.</div>
           </div>
         </div>
-        <div className="col-md-6">
-            <label htmlFor="endCity" className="form-label h5">
-              user id:
-            </label>
-            <input
-              type="text"
-              className="form-control form-control-lg"
-              id="endCity"
-              placeholder="Enter user id"
-              value={user_id}
-              onChange={(e) => setUserId(e.target.value)}
-              required
-            />
-            <div className="invalid-feedback">Please enter user id.</div>
-          </div>
+        
         <button type="submit" className="btn btn-lg btn-primary">
           Calculate Distance
         </button>

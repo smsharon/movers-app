@@ -6,7 +6,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, Email
 from flask_migrate import Migrate
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence, Customer
 from datetime import datetime
@@ -41,13 +41,15 @@ class SignupForm(FlaskForm):
 def login():
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
-    
+
     if user and check_password_hash(user.password, data['password']):
         login_user(user)
-        return jsonify({'message': 'Login successful'}), 200
+
+        # Return the user's role in the response
+        return jsonify({'message': 'Login successful', 'role': user.role})
+
     else:
-        return jsonify({'error': 'Invalid username or password'}), 401
-    
+        return jsonify({'error': 'Invalid email or password'}), 401
 @app.route('/logout')
 @login_required
 def logout():
@@ -56,26 +58,76 @@ def logout():
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    form = SignupForm(request.form)
-    if not form.validate():
-        return jsonify({'error': 'Invalid input. Please check your input and try again.'}), 400
+    data = request.get_json()
 
-    existing_user = User.query.filter_by(email=form.email.data).first()
+    # Check if the role is provided
+    role = data.get('role')
+    if role not in ['customer', 'moving_company']:
+        return jsonify({'error': 'Invalid role'}), 400
 
+    # Check if the email already exists
+    existing_user = User.query.filter_by(email=data['email']).first()
     if existing_user:
-        return jsonify({'error': 'email already exists. Choose a different email.'}), 400
-    hashed_password = generate_password_hash(form.password.data, method='sha256')
+        return jsonify({'error': 'Email already exists. Choose a different email.'}), 400
 
+    # Hash the password
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
+
+
+    # Create a new user based on the role
     new_user = User(
-        username=form.username.data,
-        email=form.email.data,
+        username=data['username'],
+        email=data['email'],
         password=hashed_password,
-        role=form.role.data
+        role=role
     )
 
     db.session.add(new_user)
     db.session.commit()
+
     return jsonify({'message': 'User created successfully'}), 201
+@app.route('/complete_customer_profile', methods=['POST'])
+@login_required
+def complete_customer_profile():
+    
+    data = request.get_json()
+
+    # Assuming you have a Customer model with appropriate attributes
+    new_customer_profile = Customer(
+        user_id=current_user.id,
+        full_name=data.get('full_name'),
+        contact_phone=data.get('contact_phone'),
+        address=data.get('address'),
+        preferred_contact_method=data.get('preferred_contact_method')
+    )
+
+    db.session.add(new_customer_profile)
+    db.session.commit()
+
+    return jsonify({'message': 'Customer profile completed successfully'}), 200
+
+# Profile completion route for moving companies
+@app.route('/complete_moving_company_profile', methods=['GET', 'POST'])
+@login_required
+def complete_moving_company_profile():
+    data = request.get_json()
+
+    # Assuming you have a MovingCompany model with appropriate attributes
+    new_moving_company_profile = MovingCompany(
+        user_id=current_user.id,
+        company_name=data.get('company_name'),
+        contact_person=data.get('contact_person'),
+        contact_email=data.get('contact_email'),
+        contact_phone=data.get('contact_phone'),
+        extra_services=data.get('extra_services')
+    )
+
+    db.session.add(new_moving_company_profile)
+    db.session.commit()
+
+    return jsonify({'message': 'Moving company profile completed successfully'}), 200
+
+
 
 class IndexResource(Resource):
     def get(self):
@@ -136,6 +188,7 @@ api.add_resource(InventoryResource, '/inventory')
 
 #location endpoints
 class LocationResource(Resource):
+    @login_required
     def get(self):
         locations = Location.query.all()
         location_list = [
@@ -149,13 +202,17 @@ class LocationResource(Resource):
             for loc in locations
         ]
         return jsonify({'locations': location_list})
+    @login_required
     def post(self):
+        if isinstance(current_user, AnonymousUserMixin):
+        # Handle the case when the user is anonymous (not logged in)
+           return {'message': 'User not logged in'}, 401
         data = request.get_json()
         new_location = Location(
         current_address=data['current_address'],
         new_address=data['new_address'],
         distance=data['distance'],
-        user_id=data['user_id']
+        user_id=current_user.id
         )
         db.session.add(new_location)
         db.session.commit()
