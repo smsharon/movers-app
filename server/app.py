@@ -1,372 +1,458 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_cors import CORS
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField
-from wtforms.validators import InputRequired
+from wtforms import StringField, IntegerField, PasswordField, SubmitField
+from wtforms.validators import InputRequired, Length, Email
 from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking
+from werkzeug.security import generate_password_hash, check_password_hash
+from models import db, User, Inventory, Location, Notification, MovingCompany, Quote, Booking, Residence, Customer
+from datetime import datetime
+from flask_wtf.csrf import generate_csrf
+from flask import jsonify
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
-app.config['SECRET_KEY'] = 'your_secret_key'  # Change this to a secure random key
+app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-migarte = Migrate(app, db)
+migrate = Migrate(app, db)
 db.init_app(app)
-#db = SQLAlchemy(app)
 api = Api(app)
 CORS(app)
 login_manager = LoginManager(app)
 
-@app.route('/')
-def index():
-    return jsonify({'message': 'Welcome to BoxdNLoaded!!!'})
+# Flask-Login setup
+login_manager.login_view = 'login'
 
-# Initialize login manager
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Login route
+class SignupForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=50)])
+    email = StringField('Email', validators=[InputRequired(), Email(), Length(max=100)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=100)])
+    role = StringField('Role', validators=[InputRequired(), Length(max=20)])
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    user = User.query.filter_by(username=data['username']).first()
-    if user and user.password == data['password']:
+    user = User.query.filter_by(email=data['email']).first()
+    
+    if user and check_password_hash(user.password, data['password']):
         login_user(user)
-        return jsonify({'message': 'Login successful'})
+        return jsonify({'message': 'Login successful'}), 200
     else:
-        return jsonify({'error': 'Invalid credentials'})
-
-# Logout route
-@app.route('/logout', methods=['GET'])
+        return jsonify({'error': 'Invalid username or password'}), 401
+    
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return jsonify({'message': 'Logout successful'})
+    return jsonify({'message': 'Logout successful'}), 200
 
-# Forms for input validation
-class InventoryForm(FlaskForm):
-    residence_type = StringField('Residence Type', validators=[InputRequired()])
-    item = StringField('Item', validators=[InputRequired()])
-    quantity = IntegerField('Quantity', validators=[InputRequired()])
+@app.route('/signup', methods=['POST'])
+def signup():
+    form = SignupForm(request.form)
+    if not form.validate():
+        return jsonify({'error': 'Invalid input. Please check your input and try again.'}), 400
 
-class LocationForm(FlaskForm):
-    current_address = StringField('Current Address', validators=[InputRequired()])
-    new_address = StringField('New Address', validators=[InputRequired()])
+    existing_user = User.query.filter_by(email=form.email.data).first()
 
-# Create inventory route
-@app.route('/create-inventory', methods=['POST'])
-@login_required
-def create_inventory():
-    form = InventoryForm(request.get_json())
-    if form.validate():
-        data = form.data
-        new_inventory = Inventory(residence_type=data['residence_type'], item=data['item'], quantity=data['quantity'], user_id=current_user.id)
-        db.session.add(new_inventory)
+    if existing_user:
+        return jsonify({'error': 'email already exists. Choose a different email.'}), 400
+    hashed_password = generate_password_hash(form.password.data, method='sha256')
+
+    new_user = User(
+        username=form.username.data,
+        email=form.email.data,
+        password=hashed_password,
+        role=form.role.data
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User created successfully'}), 201
+
+class IndexResource(Resource):
+    def get(self):
+        return jsonify({'message': 'Welcome to BoxdNLoaded!!!'})
+
+api.add_resource(IndexResource, '/')
+
+#user endpoints
+class UserResource(Resource):
+    def get(self):
+        users = User.query.all()
+        user_list = [{"username": user.username, "email": user.email, "role": user.role} for user in users]
+        return jsonify({"users": user_list})
+
+    def post(self):
+        data = request.get_json()
+        existing_user = User.query.filter_by(email=data['email']).first()
+
+        if existing_user:
+            return jsonify({'error': 'Email already exists. Choose a different Email.'}), 400
+        new_user = User(
+            username=data['username'],
+            email=data['email'],
+            password=data['password'],
+            role=data['role']
+        )
+        db.session.add(new_user)
         db.session.commit()
-        return jsonify({'message': 'Inventory item created successfully'})
-    else:
-        return jsonify({'error': 'Invalid input'})
+        return jsonify({'message': 'User created successfully'}), 201
 
-# Get inventory route
-@app.route('/get-inventory/<int:user_id>', methods=['GET'])
-@login_required
-def get_inventory(user_id):
-    user_inventory = Inventory.query.filter_by(user_id=user_id).all()
-    inventory_list = [{'id': item.id, 'residence_type': item.residence_type, 'item': item.item, 'quantity': item.quantity} for item in user_inventory]
-    return jsonify({'inventory': inventory_list})
+api.add_resource(UserResource, '/users')
 
-# Update inventory route
-@app.route('/update-inventory/<int:inventory_id>', methods=['PUT'])
-@login_required
-def update_inventory(inventory_id):
-    form = InventoryForm(request.get_json())
-    if form.validate():
-        inventory_item = Inventory.query.get(inventory_id)
-        if inventory_item:
-            data = form.data
-            inventory_item.residence_type = data['residence_type']
-            inventory_item.item = data['item']
-            inventory_item.quantity = data['quantity']
-            db.session.commit()
-            return jsonify({'message': 'Inventory item updated successfully'})
-        else:
-            return jsonify({'error': 'Inventory item not found'})
-    else:
-        return jsonify({'error': 'Invalid input'})
+#inventory endpoints
+class InventoryResource(Resource):
+    def get(self):
+        inventory_items = Inventory.query.all()
+        inventory_list = [
+            {
+                'id': item.id,
+                'residence_type_id': item.residence_type_id,
+                'user_id': item.user_id
+            }
+            for item in inventory_items
+        ]
+        return jsonify({'inventory_items': inventory_list})
 
-# Delete inventory route
-@app.route('/delete-inventory/<int:inventory_id>', methods=['DELETE'])
-@login_required
-def delete_inventory(inventory_id):
-    inventory_item = Inventory.query.get(inventory_id)
-    if inventory_item:
-        db.session.delete(inventory_item)
+    def post(self):
+        data = request.get_json()
+        new_inventory_item = Inventory(
+        residence_type_id=data['residence_type_id'],
+        user_id=data['user_id']
+       )
+        db.session.add(new_inventory_item)
         db.session.commit()
-        return jsonify({'message': 'Inventory item deleted successfully'})
-    else:
-        return jsonify({'error': 'Inventory item not found'})
+        return jsonify({'message': 'Inventory item created successfully'}), 201
 
-# Create location route
-@app.route('/create-location', methods=['POST'])
-@login_required
-def create_location():
-    form = LocationForm(request.get_json())
-    if form.validate():
-        data = form.data
-        new_location = Location(current_address=data['current_address'], new_address=data['new_address'], user_id=current_user.id)
+api.add_resource(InventoryResource, '/inventory')
+
+#location endpoints
+class LocationResource(Resource):
+    def get(self):
+        locations = Location.query.all()
+        location_list = [
+            {
+                'id': loc.id,
+                'current_address': loc.current_address,
+                'new_address': loc.new_address,
+                'distance': loc.distance,
+                'user_id': loc.user_id
+            }
+            for loc in locations
+        ]
+        return jsonify({'locations': location_list})
+    def post(self):
+        data = request.get_json()
+        new_location = Location(
+        current_address=data['current_address'],
+        new_address=data['new_address'],
+        distance=data['distance'],
+        user_id=data['user_id']
+        )
         db.session.add(new_location)
         db.session.commit()
-        return jsonify({'message': 'Location created successfully'})
-    else:
-        return jsonify({'error': 'Invalid input'})
+        return {'message': 'Location created successfully'}, 201
 
-# Get locations route
-@app.route('/get-locations/<int:user_id>', methods=['GET'])
-@login_required
-def get_locations(user_id):
-    user_locations = Location.query.filter_by(user_id=user_id).all()
-    location_list = [{'id': location.id, 'current_address': location.current_address, 'new_address': location.new_address} for location in user_locations]
-    return jsonify({'locations': location_list})
+api.add_resource(LocationResource, '/locations')
 
-# Update location route
-@app.route('/update-location/<int:location_id>', methods=['PUT'])
-@login_required
-def update_location(location_id):
-    form = LocationForm(request.get_json())
-    if form.validate():
-        data = form.data
-        location_item = Location.query.get(location_id)
-        if location_item:
-            location_item.current_address = data['current_address']
-            location_item.new_address = data['new_address']
+
+# notifications endpoints
+class NotificationResource(Resource):
+    def get(self):
+        notifications = Notification.query.all()
+        notification_list = [
+        {
+            'id': note.id,
+            'user_id': note.user_id,
+            'notification_type': note.notification_type,
+            'content': note.content,
+            'timestamp': note.timestamp.isoformat()
+        }
+        for note in notifications
+    ]
+        return jsonify({'notifications': notification_list})
+    def post(self):
+        data = request.get_json()
+        new_notification = Notification(
+        user_id=data['user_id'],
+        notification_type=data['notification_type'],
+        content=data['content']
+    )
+        db.session.add(new_notification)
+        db.session.commit()
+        return jsonify({'message': 'Notification created successfully'}), 201
+api.add_resource(NotificationResource, '/notifications')
+
+
+# Endpoints for moving companies
+class MovingCompanyResource(Resource):
+    @login_required
+    def get(self):
+        if current_user.role != 'moving_company':
+            return jsonify({'error': 'Unauthorized access'}), 403
+        companies = MovingCompany.query.all()
+        company_list = [
+        {
+            'id': comp.id,
+            'user_id': comp.user_id,
+            'company_name': comp.company_name,
+            'contact_person': comp.contact_person,
+            'contact_email': comp.contact_email,
+            'contact_phone': comp.contact_phone,
+            'extra_services': comp.extra_services
+        }
+        for comp in companies
+    ]
+        return jsonify({'moving_companies': company_list})
+    def post(self):
+        data = request.get_json()
+        new_moving_company = MovingCompany(
+        company_name=data['company_name'],
+        contact_person=data['contact_person'],
+        contact_email=data['contact_email'],
+        contact_phone=data['contact_phone'],
+        extra_services=data['extra_services'],
+        user=current_user
+    )
+        db.session.add(new_moving_company)
+        db.session.commit()
+        return jsonify({'message': 'Moving company created successfully'}), 201
+api.add_resource(MovingCompanyResource, '/moving_companies')
+
+# Endpoint to get all quotes
+class QuoteResource(Resource):
+    def get(self):
+        quotes = Quote.query.all()
+        quote_list = [
+        {
+            'id': quote.id,
+            'company_id': quote.company_id,
+            'user_id': quote.user_id,
+            'quote_amount': quote.quote_amount,
+            'residence_type_id': quote.residence_type_id
+        }
+        for quote in quotes
+    ]
+        return jsonify({'quotes': quote_list})
+    def post(self):
+        data = request.get_json()
+        new_quote = Quote(
+        company_id=data['company_id'],
+        user_id=data['user_id'],
+        quote_amount=data['quote_amount'],
+        residence_type_id=data['residence_type_id']
+    )
+        db.session.add(new_quote)
+        db.session.commit()
+        return jsonify({'message': 'Quote created successfully'}), 201
+api.add_resource(QuoteResource, '/quotes')
+# Endpoint for bookings
+class BookingResource(Resource):
+    def get(self):
+        bookings = Booking.query.all()
+        booking_list = [
+        {
+            'id': booking.id,
+            'user_id': booking.user_id,
+            'quote_id': booking.quote_id,
+            'booking_status': booking.booking_status,
+            'moving_date': booking.moving_date.isoformat(),
+            'moving_time': booking.moving_time.isoformat(),
+            'residence_type_id': booking.residence_type_id
+        }
+        for booking in bookings
+    ]
+        return jsonify({'bookings': booking_list})
+    def post(self):
+         data = request.get_json()
+         moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
+         moving_time = datetime.strptime(data['moving_time'], '%H:%M').time()
+
+         new_booking = Booking(
+            user_id=data['user_id'],
+            quote_id=data['quote_id'],
+            booking_status=data['booking_status'],
+            moving_date=moving_date,
+            moving_time=moving_time,
+            residence_type_id=data['residence_type_id']
+         )
+
+         db.session.add(new_booking)
+         db.session.commit()
+         return jsonify({'message': 'Booking created successfully'}), 201
+api.add_resource(BookingResource, '/bookings')    
+
+# Endpoint for all residences
+class ResidenceResource(Resource):
+    def get(self):
+        residences = Residence.query.all()
+        residence_list = [
+        {'id': res.id, 'name': res.name}
+        for res in residences
+    ]
+        return jsonify({'residences': residence_list})
+
+    def post(self):
+        data = request.get_json()
+        new_residence = Residence(
+        name=data['name']
+    )
+        db.session.add(new_residence)
+        db.session.commit()
+        return jsonify({'message': 'Residence created successfully'}), 201
+api.add_resource(ResidenceResource, '/residences')
+
+class CustomerResource(Resource):
+    @login_required
+    def get(self):
+        if current_user.role != 'customer':
+            return jsonify({'error': 'Unauthorized access'}), 403
+
+        customers = Customer.query.all()
+        customer_list = [
+            {
+                'user_id': customer.user_id,
+                'full_name': customer.full_name,
+                'contact_phone': customer.contact_phone,
+                'email': customer.email,
+                'address': customer.address,
+                'preferred_contact_method': customer.preferred_contact_method
+            }
+            for customer in customers
+        ]
+        return jsonify({'customers': customer_list})
+
+    def post(self):
+        data = request.get_json()
+        new_customer = Customer(
+            user_id=data['user_id'],
+            full_name=data['full_name'],
+            contact_phone=data['contact_phone'],
+            email=data['email'],
+            address=data['address'],
+            preferred_contact_method=data['preferred_contact_method'],
+            user=current_user
+        )
+        db.session.add(new_customer)
+        db.session.commit()
+        return jsonify({'message': 'Customer created successfully'}), 201
+
+api.add_resource(CustomerResource, '/customers')
+
+# Update user by ID
+class UpdateUserResource(Resource):
+    def put(self, user_id):
+        user = User.query.get(user_id)
+        if user:
+            data = request.get_json()
+            user.username = data.get('username', user.username)
+            user.email = data.get('email', user.email)
+            user.password = data.get('password', user.password)
+            user.role = data.get('role', user.role)
             db.session.commit()
-            return jsonify({'message': 'Location updated successfully'})
+            return jsonify({'message': 'User updated successfully'}), 200
         else:
-            return jsonify({'error': 'Location not found'})
-    else:
-        return jsonify({'error': 'Invalid input'})
+            return jsonify({'error': 'User not found'}), 404
 
-# Delete location route
-@app.route('/delete-location/<int:location_id>', methods=['DELETE'])
-@login_required
-def delete_location(location_id):
-    location_item = Location.query.get(location_id)
-    if location_item:
-        db.session.delete(location_item)
-        db.session.commit()
-        return jsonify({'message': 'Location deleted successfully'})
-    else:
-        return jsonify({'error': 'Location not found'})
+api.add_resource(UpdateUserResource, '/users/<int:user_id>')
 
-# ... Other routes ...
+# Endpoint to update an inventory item by ID
+class UpdateInventoryResource(Resource):
+    def put(self, item_id):
+        inventory_item = Inventory.query.get(item_id)
+        if inventory_item:
+            data = request.get_json()
+            inventory_item.residence_type_id = data.get('residence_type_id', inventory_item.residence_type_id)
+            inventory_item.user_id = data.get('user_id', inventory_item.user_id)
+            db.session.commit()
+            return jsonify({'message': 'Inventory item updated successfully'}), 200
+        else:
+            return jsonify({'error': 'Inventory item not found'}), 404
 
-# Create notification route
-@app.route('/create-notification', methods=['POST'])
-@login_required
-def create_notification():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    notification_type = data.get('notification_type')
-    content = data.get('content')
+api.add_resource(UpdateInventoryResource, '/inventory/<int:item_id>')
 
-    new_notification = Notification(user_id=user_id, notification_type=notification_type, content=content)
-    db.session.add(new_notification)
-    db.session.commit()
 
-    return jsonify({'message': 'Notification created successfully'})
+# Endpoint to update a location by ID
+class UpdateLocationResource(Resource):
+    def put(self, location_id):
+        location = Location.query.get(location_id)
+        if location:
+            data = request.get_json()
+            location.current_address = data.get('current_address', location.current_address)
+            location.new_address = data.get('new_address', location.new_address)
+            location.distance = data.get('distance', location.distance)
+            location.user_id = data.get('user_id', location.user_id)
+            db.session.commit()
+            return jsonify({'message': 'Location updated successfully'}), 200
+        else:
+            return jsonify({'error': 'Location not found'}), 404
 
-# Get notifications route
-@app.route('/get-notifications/<int:user_id>', methods=['GET'])
-@login_required
-def get_notifications(user_id):
-    user_notifications = Notification.query.filter_by(user_id=user_id).all()
-    notification_list = [{'id': notification.id, 'notification_type': notification.notification_type, 'content': notification.content, 'timestamp': notification.timestamp} for notification in user_notifications]
-    return jsonify({'notifications': notification_list})
+api.add_resource(UpdateLocationResource, '/locations/<int:location_id>')
+# Endpoint to update a booking by ID
+class UpdateBookingResource(Resource):
+    def put(self, booking_id):
+        booking = Booking.query.get(booking_id)
 
-# Update notification route
-@app.route('/update-notification/<int:notification_id>', methods=['PUT'])
-@login_required
-def update_notification(notification_id):
-    data = request.get_json()
-    notification_type = data.get('notification_type')
-    content = data.get('content')
+        if booking:
+            data = request.get_json()
 
-    notification_item = Notification.query.get(notification_id)
-    if notification_item:
-        notification_item.notification_type = notification_type
-        notification_item.content = content
-        db.session.commit()
-        return jsonify({'message': 'Notification updated successfully'})
-    else:
-        return jsonify({'error': 'Notification not found'})
+            try:
+                moving_date = datetime.strptime(data['moving_date'], '%Y-%m-%d').date()
+                moving_time = datetime.strptime(data['moving_time'], '%H:%M:%S').time()
+            except ValueError as e:
+                return jsonify({'error': f'Error parsing date or time: {str(e)}'}), 400
 
-# Delete notification route
-@app.route('/delete-notification/<int:notification_id>', methods=['DELETE'])
-@login_required
-def delete_notification(notification_id):
-    notification_item = Notification.query.get(notification_id)
-    if notification_item:
-        db.session.delete(notification_item)
-        db.session.commit()
-        return jsonify({'message': 'Notification deleted successfully'})
-    else:
-        return jsonify({'error': 'Notification not found'})
+            # Update individual attributes using setattr
+            setattr(booking, 'moving_date', moving_date)
+            setattr(booking, 'user_id', data.get('user_id', booking.user_id))
+            setattr(booking, 'quote_id', data.get('quote_id', booking.quote_id))
+            setattr(booking, 'booking_status', data.get('booking_status', booking.booking_status))
+            setattr(booking, 'moving_time', moving_time)
+            setattr(booking, 'residence_type_id', data.get('residence_type_id', booking.residence_type_id))
 
-# Create moving company route
-@app.route('/create-moving-company', methods=['POST'])
-@login_required
-def create_moving_company():
-    data = request.get_json()
-    company_name = data.get('company_name')
-    contact_person = data.get('contact_person')
-    contact_email = data.get('contact_email')
-    contact_phone = data.get('contact_phone')
+            db.session.commit()
 
-    new_moving_company = MovingCompany(company_name=company_name, contact_person=contact_person, contact_email=contact_email, contact_phone=contact_phone)
-    db.session.add(new_moving_company)
-    db.session.commit()
+            return jsonify({'message': 'Booking updated successfully'}), 200
+        else:
+            return jsonify({'error': 'Booking not found'}), 404
 
-    return jsonify({'message': 'Moving Company created successfully'})
+api.add_resource(UpdateBookingResource, '/bookings/<int:booking_id>')
 
-# Get moving companies route
-@app.route('/get-moving-companies', methods=['GET'])
-@login_required
-def get_moving_companies():
-    moving_companies = MovingCompany.query.all()
-    company_list = [{'id': company.id, 'company_name': company.company_name, 'contact_person': company.contact_person, 'contact_email': company.contact_email, 'contact_phone': company.contact_phone} for company in moving_companies]
-    return jsonify({'moving_companies': company_list})
+# Endpoint to delete a user by ID
+class DeleteUserResource(Resource):
+    def delete(self, user_id):
+        user = User.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({'message': 'User deleted successfully'}), 200
+        else:
+            return jsonify({'error': 'User not found'}), 404
 
-# Update moving company route
-@app.route('/update-moving-company/<int:company_id>', methods=['PUT'])
-@login_required
-def update_moving_company(company_id):
-    data = request.get_json()
-    company_name = data.get('company_name')
-    contact_person = data.get('contact_person')
-    contact_email = data.get('contact_email')
-    contact_phone = data.get('contact_phone')
+api.add_resource(DeleteUserResource, '/users/<int:user_id>')
 
-    moving_company_item = MovingCompany.query.get(company_id)
-    if moving_company_item:
-        moving_company_item.company_name = company_name
-        moving_company_item.contact_person = contact_person
-        moving_company_item.contact_email = contact_email
-        moving_company_item.contact_phone = contact_phone
-        db.session.commit()
-        return jsonify({'message': 'Moving Company updated successfully'})
-    else:
-        return jsonify({'error': 'Moving Company not found'})
+# Endpoint to delete a booking by ID
+class DeleteBookingResource(Resource):
+    def delete(self, booking_id):
+        booking = Booking.query.get(booking_id)
+        if booking:
+            db.session.delete(booking)
+            db.session.commit()
+            return jsonify({'message': 'Booking deleted successfully'}), 200
+        else:
+            return jsonify({'error': 'Booking not found'}), 404
 
-# Delete moving company route
-@app.route('/delete-moving-company/<int:company_id>', methods=['DELETE'])
-@login_required
-def delete_moving_company(company_id):
-    moving_company_item = MovingCompany.query.get(company_id)
-    if moving_company_item:
-        db.session.delete(moving_company_item)
-        db.session.commit()
-        return jsonify({'message': 'Moving Company deleted successfully'})
-    else:
-        return jsonify({'error': 'Moving Company not found'})
+api.add_resource(DeleteBookingResource, '/bookings/<int:booking_id>')
 
-# Get quotes route
-@app.route('/get-quotes/<int:user_id>', methods=['GET'])
-@login_required
-def get_quotes(user_id):
-    user_quotes = Quote.query.filter_by(user_id=user_id).all()
-    quote_list = [{'id': quote.id, 'company_id': quote.company_id, 'quote_amount': quote.quote_amount} for quote in user_quotes]
-    return jsonify({'quotes': quote_list})
 
-# Update quote route
-@app.route('/update-quote/<int:quote_id>', methods=['PUT'])
-@login_required
-def update_quote(quote_id):
-    data = request.get_json()
-    company_id = data.get('company_id')
-    quote_amount = data.get('quote_amount')
-
-    quote_item = Quote.query.get(quote_id)
-    if quote_item:
-        quote_item.company_id = company_id
-        quote_item.quote_amount = quote_amount
-        db.session.commit()
-        return jsonify({'message': 'Quote updated successfully'})
-    else:
-        return jsonify({'error': 'Quote not found'})
-
-# Delete quote route
-@app.route('/delete-quote/<int:quote_id>', methods=['DELETE'])
-@login_required
-def delete_quote(quote_id):
-    quote_item = Quote.query.get(quote_id)
-    if quote_item:
-        db.session.delete(quote_item)
-        db.session.commit()
-        return jsonify({'message': 'Quote deleted successfully'})
-    else:
-        return jsonify({'error': 'Quote not found'})
-
-# Create booking route
-@app.route('/create-booking', methods=['POST'])
-@login_required
-def create_booking():
-    data = request.get_json()
-    user_id = current_user.id  # Use the current user's ID
-    quote_id = data.get('quote_id')
-    booking_status = data.get('booking_status')
-    moving_date = data.get('moving_date')
-    moving_time = data.get('moving_time')
-
-    new_booking = Booking(user_id=user_id, quote_id=quote_id, booking_status=booking_status, moving_date=moving_date, moving_time=moving_time)
-    db.session.add(new_booking)
-    db.session.commit()
-
-    return jsonify({'message': 'Booking created successfully'})
-
-# Get bookings route
-@app.route('/get-bookings/<int:user_id>', methods=['GET'])
-@login_required
-def get_bookings(user_id):
-    user_bookings = Booking.query.filter_by(user_id=user_id).all()
-    booking_list = [{'id': booking.id, 'quote_id': booking.quote_id, 'booking_status': booking.booking_status, 'moving_date': booking.moving_date, 'moving_time': booking.moving_time} for booking in user_bookings]
-    return jsonify({'bookings': booking_list})
-
-# Update booking route
-@app.route('/update-booking/<int:booking_id>', methods=['PUT'])
-@login_required
-def update_booking(booking_id):
-    data = request.get_json()
-    quote_id = data.get('quote_id')
-    booking_status = data.get('booking_status')
-    moving_date = data.get('moving_date')
-    moving_time = data.get('moving_time')
-
-    booking_item = Booking.query.get(booking_id)
-    if booking_item:
-        booking_item.quote_id = quote_id
-        booking_item.booking_status = booking_status
-        booking_item.moving_date = moving_date
-        booking_item.moving_time = moving_time
-        db.session.commit()
-        return jsonify({'message': 'Booking updated successfully'})
-    else:
-        return jsonify({'error': 'Booking not found'})
-
-# Delete booking route
-@app.route('/delete-booking/<int:booking_id>', methods=['DELETE'])
-@login_required
-def delete_booking(booking_id):
-    booking_item = Booking.query.get(booking_id)
-    if booking_item:
-        db.session.delete(booking_item)
-        db.session.commit()
-        return jsonify({'message': 'Booking deleted successfully'})
-    else:
-        return jsonify({'error': 'Booking not found'})
 
 if __name__ == '__main__':
     with app.app_context():

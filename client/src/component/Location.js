@@ -51,19 +51,20 @@ const LocationCalculator = () => {
 
   const sendDistanceToBackend = async (currentAddress, endAddress, distance) => {
     try {
-      const response = await fetch('http://localhost:5000/create-location', {
+      const response = await fetch('/locations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           current_address: currentAddress,
-          end_address: endAddress,
+          new_address: endAddress,
           distance: distance,
-        }),
+        }),        
       });
 
       if (response.status === 200) {
+        console.log(currentAddress, endAddress, distance)
         console.log('Distance stored successfully on the backend.');
       } else {
         throw new Error('Failed to store distance on the backend.');
