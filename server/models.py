@@ -61,6 +61,7 @@ class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     current_address = db.Column(db.String(100), nullable=False)
     new_address = db.Column(db.String(100), nullable=False)
+    distance = db.Column(db.Float, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='location')
 
@@ -133,7 +134,7 @@ class Customer(db.Model, SerializerMixin):
     
     # Relationships
     user = db.relationship('User', back_populates='customer')
-
+    
 
 
 
