@@ -37,19 +37,26 @@ class SignupForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=100)])
     role = StringField('Role', validators=[InputRequired(), Length(max=20)])
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    data = request.get_json()
-    user = User.query.filter_by(email=data['email']).first()
+    if request.method == 'POST':
+        # Handle POST request logic
+        data = request.get_json()
+        user = User.query.filter_by(email=data['email']).first()
 
-    if user and check_password_hash(user.password, data['password']):
-        login_user(user)
+        if user and check_password_hash(user.password, data['password']):
+            login_user(user)
 
-        # Return the user's role in the response
-        return jsonify({'message': 'Login successful', 'role': user.role})
+            # Return the user's role in the response
+            return jsonify({'message': 'Login successful', 'role': user.role})
 
-    else:
-        return jsonify({'error': 'Invalid email or password'}), 401
+        else:
+            return jsonify({'error': 'Invalid email or password'}), 401
+
+    elif request.method == 'GET':
+        # Handle GET request logic (e.g., render login form)
+        return jsonify({'message': 'Render login form'})
+    
 @app.route('/logout')
 @login_required
 def logout():
@@ -202,12 +209,14 @@ class LocationResource(Resource):
             for loc in locations
         ]
         return jsonify({'locations': location_list})
+    
     @login_required
     def post(self):
         if isinstance(current_user, AnonymousUserMixin):
         # Handle the case when the user is anonymous (not logged in)
            return {'message': 'User not logged in'}, 401
         data = request.get_json()
+        print('Received data:', data)
         new_location = Location(
         current_address=data['current_address'],
         new_address=data['new_address'],

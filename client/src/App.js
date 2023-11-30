@@ -1,30 +1,5 @@
 // App.js
 import React from 'react';
-<<<<<<< HEAD
-// import InventoryForm from './Components/Inventory';
-// import { Route, Routes } from 'react-router-dom';
-//import Signup from './Signup';
-//import Login from './Login';
-// import LocationCalculator from './Components/Location';
-// import MovingPriceCalculator from './Components/MovingPriceCalculator'
-import CustomNavbar from './component/Navbar';
-
-function App() {
-  return (
-    <div className="App">
-      <CustomNavbar/>
-      {/* <InventoryForm/> */}
-      {/* <LocationCalculator /> */}
-      {/* <MovingPriceCalculator /> */}
-      {/* <Login/>  */}
-      {/*<Signup/>
-    {/* <Routes>
-      <Route>
-          <Route path="/" component={SignUp} />
-          <Route path="/login" component={Login} />
-          </Route>
-    </Routes> */}
-=======
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import LocationCalculator from './components/Location';
@@ -34,6 +9,11 @@ import Login from './components/Login';
 import CompleteCustomerProfile from './components/Customer';
 import CompleteMovingCompanyProfile from './components/MovingCompany';
 import Inventory from './components/Inventory';
+import LandingPage from './components/LandingPage';
+import Footer from './components/Footer';
+import './styles.css';
+
+
 function App() {
   return (
     <div className="App">
@@ -46,10 +26,11 @@ function App() {
         <Route path="/locations" element={<LocationCalculator />} />
         <Route path="/Moving" element={<MovingPriceCalculator />} />
         <Route path="/inventory" element={<Inventory/>} />
+        <Route path="/landingpage" element={<LandingPage/>} />
+        <Route path="/footer" element={<Footer/>} />
       </Routes>
 
-     
->>>>>>> 258f7288d8aa32019872c07bbc62f2086713d44b
+  
     </div>
   );
 }
