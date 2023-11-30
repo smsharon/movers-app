@@ -40,7 +40,12 @@ class SignupForm(FlaskForm):
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    user = User.query.filter_by(email=data['email']).first()
+
+    # Check if 'email' is present in data
+    if 'email' not in data:
+        return jsonify({'message': 'Email is required for login'}), 400
+
+    user = User.query.filter_by(email=data.get('email')).first()
 
     if user and check_password_hash(user.password, data['password']):
         login_user(user)
@@ -89,22 +94,32 @@ def signup():
 @app.route('/complete_customer_profile', methods=['POST'])
 @login_required
 def complete_customer_profile():
-    
     data = request.get_json()
 
-    # Assuming you have a Customer model with appropriate attributes
-    new_customer_profile = Customer(
-        user_id=current_user.id,
-        full_name=data.get('full_name'),
-        contact_phone=data.get('contact_phone'),
-        address=data.get('address'),
-        preferred_contact_method=data.get('preferred_contact_method')
-    )
+    # Check if the user already has a customer profile
+    existing_profile = Customer.query.filter_by(user_id=current_user.id).first()
 
-    db.session.add(new_customer_profile)
+    if existing_profile:
+        # Update the existing customer profile
+        existing_profile.full_name = data.get('full_name', existing_profile.full_name)
+        existing_profile.contact_phone = data.get('contact_phone', existing_profile.contact_phone)
+        existing_profile.address = data.get('address', existing_profile.address)
+        existing_profile.preferred_contact_method = data.get('preferred_contact_method', existing_profile.preferred_contact_method)
+    else:
+        # Create a new customer profile
+        new_customer_profile = Customer(
+            user_id=current_user.id,
+            full_name=data.get('full_name'),
+            contact_phone=data.get('contact_phone'),
+            address=data.get('address'),
+            preferred_contact_method=data.get('preferred_contact_method')
+        )
+
+        db.session.add(new_customer_profile)
+
     db.session.commit()
 
-    return jsonify({'message': 'Customer profile completed successfully'}), 200
+    return jsonify({'message': 'Customer profile completed or updated successfully'}), 200
 
 # Profile completion route for moving companies
 @app.route('/complete_moving_company_profile', methods=['GET', 'POST'])

@@ -20,7 +20,7 @@ const CompleteCustomerProfile = () => {
     try {
       setLoading(true);
       const response = await fetch('/complete_customer_profile', {
-        method: 'POST',
+        method: 'POST, GET',
         headers: {
           'Content-Type': 'application/json',
         },
