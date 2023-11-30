@@ -27,8 +27,11 @@ const Login = () => {
       });
 
       if (response.ok) {
-        // Redirect to profile completion based on the user's role
         const userData = await response.json();
+        const { access_token } = userData;
+
+        // Store the access token securely (e.g., in localStorage)
+        localStorage.setItem('access_token', access_token);
         if (userData.role === 'customer') {
           navigate('/complete_customer_profile');
         } else if (userData.role === 'moving_company') {
