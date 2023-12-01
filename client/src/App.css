@@ -47,5 +47,7 @@ body {
   
    /* Optional: makes sure your content is centered in the viewport */
   background: black;
+  min-height: 100vh; /* Set the minimum height to 100% of the viewport height */
+  
 }
 
