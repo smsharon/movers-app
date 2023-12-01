@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Button, Image } from 'react-bootstrap';
+import { Container, Form, Button } from 'react-bootstrap';
 import './Inventory.css';
+import { useNavigate } from 'react-router-dom';
+
 const Inventory = () => {
   const [residenceTypes, setResidenceTypes] = useState([]);
   const [selectedResidenceTypes, setSelectedResidenceTypes] = useState([]);
-
-  const residenceImages = {
-    1: './bedsitter.jpg',
-    2: './one-bedroom.jpg',
-    3: './two-bedroom.jpg',
-    4: './studio.jpg',
-  };
-
+  
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchResidenceTypes = async () => {
       try {
@@ -34,15 +30,20 @@ const Inventory = () => {
 
   const handleResidenceTypeChange = (residenceTypeId) => {
     setSelectedResidenceTypes((prevSelectedResidenceTypes) => {
-      if (prevSelectedResidenceTypes.includes(residenceTypeId)) {
-        // Deselect the residence type if already selected
-        return prevSelectedResidenceTypes.filter((id) => id !== residenceTypeId);
-      } else {
-        // Select the residence type if not selected
-        return [...prevSelectedResidenceTypes, residenceTypeId];
-      }
+      // Use a single value instead of an array
+      const newSelectedResidenceType = prevSelectedResidenceTypes[0] === residenceTypeId ? null : residenceTypeId;
+  
+      return newSelectedResidenceType !== null ? [newSelectedResidenceType] : [];
     });
   };
+  
+
+  // Function to include the access token in requests
+  const includeAccessToken = () => {
+    const token = localStorage.getItem('access_token');
+    return token ? `Bearer ${token}` : '';
+  };
+  
 
   const handleSave = async () => {
     try {
@@ -50,15 +51,17 @@ const Inventory = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': includeAccessToken(),
         },
         body: JSON.stringify({
-          residence_types: selectedResidenceTypes,
+          residence_type_id: selectedResidenceTypes[0],
         }),
       });
 
       if (response.status === 201) {
         console.log('Inventory saved successfully.');
-        // Reset form or navigate to another page
+        // Navigate to the location page upon successful save
+        navigate('/locations'); // Replace '/location' with the actual path of your location page
       } else {
         console.error('Failed to save inventory.');
       }
@@ -66,28 +69,21 @@ const Inventory = () => {
       console.error('Error while saving inventory:', error);
     }
   };
-
   return (
     <Container className="container">
       <h2>Inventory Form</h2>
       <Form>
-        <Form.Group controlId="residenceTypes" className="residence-box">
+        <Form.Group controlId="residenceTypes" className="form-group">
+          <Form.Label>Residence Types:</Form.Label>
           {residenceTypes.map((residence) => (
-            <div key={residence.id} className="residence-item">
-              <Form.Check
-                type="checkbox"
-                label={residence.name}
-                checked={selectedResidenceTypes.includes(residence.id)}
-                onChange={() => handleResidenceTypeChange(residence.id)}
-              />
-              {residenceImages[residence.id] && (
-                <Image
-                  src={residenceImages[residence.id]}
-                  alt={`Image for ${residence.name}`}
-                  className="residence-image"
-                />
-              )}
-            </div>
+            <Form.Check
+              key={residence.id}
+              type="checkbox"
+              label={residence.name} /* Make sure the property name is correct */
+              checked={selectedResidenceTypes.includes(residence.id)}
+              onChange={() => handleResidenceTypeChange(residence.id)}
+              className="form-check"
+            />
           ))}
         </Form.Group>
   
@@ -97,5 +93,7 @@ const Inventory = () => {
       </Form>
     </Container>
   );
+  
 };
+
 export default Inventory;

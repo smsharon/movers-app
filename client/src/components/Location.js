@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import "./Location.css"
 const LocationCalculator = () => {
   const [startCity, setStartCity] = useState('');
   const [endCity, setEndCity] = useState('');
@@ -20,7 +20,7 @@ const LocationCalculator = () => {
 
       const calculatedDistance = await getDistance(startCity, endCity);
       setDistance(calculatedDistance.toFixed(2));
-
+      
       // Call sendDistanceToBackend after successfully calculating the distance
       await sendDistanceToBackend(startCity, endCity, calculatedDistance);
     } catch (error) {
@@ -48,13 +48,19 @@ const LocationCalculator = () => {
       throw error;
     }
   };
-
+  
+   // Function to include the access token in requests
+   const includeAccessToken = () => {
+    const token = localStorage.getItem('access_token');
+    return token ? `Bearer ${token}` : '';
+  };
   const sendDistanceToBackend = async (currentAddress, newAddress, distance) => {
     try {
       const response = await fetch('/locations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': includeAccessToken(),
         },
         body: JSON.stringify({
           current_address: currentAddress,
@@ -75,7 +81,7 @@ const LocationCalculator = () => {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center vh-100">
+    <div className="location">
       <form
         id="locationForm"
         noValidate
@@ -100,7 +106,7 @@ const LocationCalculator = () => {
               onChange={(e) => setStartCity(e.target.value)}
               required
             />
-            <div className="invalid-feedback">Please enter the start city.</div>
+            
           </div>
           <div className="col-md-6">
             <label htmlFor="endCity" className="form-label h5">
@@ -115,7 +121,7 @@ const LocationCalculator = () => {
               onChange={(e) => setEndCity(e.target.value)}
               required
             />
-            <div className="invalid-feedback">Please enter the end city.</div>
+            
           </div>
         </div>
         
