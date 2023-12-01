@@ -1,0 +1,38 @@
+/* Add this CSS to your stylesheet or component */
+.logout-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+  }
+  
+  h2 {
+    color: #333;
+  }
+  
+  p {
+    margin-bottom: 16px;
+    color: #555;
+  }
+  
+  button {
+    padding: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #c0392b;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  

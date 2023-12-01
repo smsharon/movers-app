@@ -12,11 +12,14 @@ from models import db, User, Inventory, Location, Notification, MovingCompany, Q
 from datetime import datetime
 from flask_wtf.csrf import generate_csrf
 from flask import jsonify
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['JWT_SECRET_KEY'] = 'said8354'
+jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
 api = Api(app)
@@ -43,15 +46,15 @@ def login():
     user = User.query.filter_by(email=data['email']).first()
 
     if user and check_password_hash(user.password, data['password']):
-        login_user(user)
+        access_token = create_access_token(identity={'id': user.id, 'role': user.role})
 
         # Return the user's role in the response
-        return jsonify({'message': 'Login successful', 'role': user.role})
+        return jsonify({'message': 'Login successful', 'access_token': access_token, 'role': user.role}), 200
 
     else:
         return jsonify({'error': 'Invalid email or password'}), 401
 @app.route('/logout')
-@login_required
+@jwt_required()
 def logout():
     logout_user()
     return jsonify({'message': 'Logout successful'}), 200
@@ -86,17 +89,20 @@ def signup():
     db.session.commit()
 
     return jsonify({'message': 'User created successfully'}), 201
-@app.route('/complete_customer_profile', methods=['POST'])
-@login_required
-def complete_customer_profile():
+
     
+@app.route('/complete_customer_profile', methods=['POST'])
+@jwt_required()
+def complete_customer_profile():
+    current_user = get_jwt_identity()
     data = request.get_json()
 
     # Assuming you have a Customer model with appropriate attributes
     new_customer_profile = Customer(
-        user_id=current_user.id,
+        user_id=current_user['id'],
         full_name=data.get('full_name'),
         contact_phone=data.get('contact_phone'),
+        email=data.get('email'),
         address=data.get('address'),
         preferred_contact_method=data.get('preferred_contact_method')
     )
@@ -107,14 +113,15 @@ def complete_customer_profile():
     return jsonify({'message': 'Customer profile completed successfully'}), 200
 
 # Profile completion route for moving companies
-@app.route('/complete_moving_company_profile', methods=['GET', 'POST'])
-@login_required
+@app.route('/complete_moving_company_profile', methods=['POST'])
+@jwt_required()
 def complete_moving_company_profile():
+    current_user = get_jwt_identity()
     data = request.get_json()
 
     # Assuming you have a MovingCompany model with appropriate attributes
     new_moving_company_profile = MovingCompany(
-        user_id=current_user.id,
+        user_id=current_user['id'],
         company_name=data.get('company_name'),
         contact_person=data.get('contact_person'),
         contact_email=data.get('contact_email'),
@@ -202,17 +209,15 @@ class LocationResource(Resource):
             for loc in locations
         ]
         return jsonify({'locations': location_list})
-    @login_required
+    @jwt_required()
     def post(self):
-        if isinstance(current_user, AnonymousUserMixin):
-        # Handle the case when the user is anonymous (not logged in)
-           return {'message': 'User not logged in'}, 401
+        current_user = get_jwt_identity()
         data = request.get_json()
         new_location = Location(
         current_address=data['current_address'],
         new_address=data['new_address'],
         distance=data['distance'],
-        user_id=current_user.id
+        user_id=current_user['id'],
         )
         db.session.add(new_location)
         db.session.commit()
@@ -352,8 +357,8 @@ class ResidenceResource(Resource):
     def get(self):
         residences = Residence.query.all()
         residence_list = [
-        {'id': res.id, 'name': res.name}
-        for res in residences
+        {'id': residence.id, 'name': residence.name}
+        for residence in residences
     ]
         return jsonify({'residences': residence_list})
 
