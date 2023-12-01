@@ -54,7 +54,7 @@ def login():
     else:
         return jsonify({'error': 'Invalid email or password'}), 401
 @app.route('/logout')
-@login_required
+@jwt_required()
 def logout():
     logout_user()
     return jsonify({'message': 'Logout successful'}), 200
@@ -89,6 +89,8 @@ def signup():
     db.session.commit()
 
     return jsonify({'message': 'User created successfully'}), 201
+
+    
 @app.route('/complete_customer_profile', methods=['POST'])
 @jwt_required()
 def complete_customer_profile():
@@ -112,13 +114,14 @@ def complete_customer_profile():
 
 # Profile completion route for moving companies
 @app.route('/complete_moving_company_profile', methods=['POST'])
-@login_required
+@jwt_required()
 def complete_moving_company_profile():
+    current_user = get_jwt_identity()
     data = request.get_json()
 
     # Assuming you have a MovingCompany model with appropriate attributes
     new_moving_company_profile = MovingCompany(
-        user_id=current_user.id,
+        user_id=current_user['id'],
         company_name=data.get('company_name'),
         contact_person=data.get('contact_person'),
         contact_email=data.get('contact_email'),
@@ -206,17 +209,15 @@ class LocationResource(Resource):
             for loc in locations
         ]
         return jsonify({'locations': location_list})
-    @login_required
+    @jwt_required()
     def post(self):
-        if isinstance(current_user, AnonymousUserMixin):
-        # Handle the case when the user is anonymous (not logged in)
-           return {'message': 'User not logged in'}, 401
+        current_user = get_jwt_identity()
         data = request.get_json()
         new_location = Location(
         current_address=data['current_address'],
         new_address=data['new_address'],
         distance=data['distance'],
-        user_id=current_user.id
+        user_id=current_user['id'],
         )
         db.session.add(new_location)
         db.session.commit()
@@ -356,8 +357,8 @@ class ResidenceResource(Resource):
     def get(self):
         residences = Residence.query.all()
         residence_list = [
-        {'id': res.id, 'name': res.name}
-        for res in residences
+        {'id': residence.id, 'name': residence.name}
+        for residence in residences
     ]
         return jsonify({'residences': residence_list})
 
