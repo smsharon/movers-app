@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import "./Customer.css"
 const CompleteCustomerProfile = () => {
   const [profileData, setProfileData] = useState({
     full_name: '',
@@ -52,7 +52,7 @@ const CompleteCustomerProfile = () => {
   };
   
   return (
-    <div>
+    <div className='customer'>
       <h2>Complete Customer Profile</h2>
       <form onSubmit={handleSubmit}>
         <label>Full Name:</label>
