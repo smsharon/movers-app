@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -9,6 +11,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleInputChange = (e) => {
     setLoginData({ ...loginData, [e.target.name]: e.target.value });
@@ -35,11 +38,13 @@ const Login = () => {
         if (userData.role === 'customer') {
           navigate('/complete_customer_profile');
         } else if (userData.role === 'moving_company') {
-          navigate('/complete_moving-company_profile');
+          navigate('/complete_moving_company_profile');
         } else {
           // Redirect to a default dashboard or home page
           navigate('/dashboard');
         }
+        // Display success message
+        setSuccessMessage('Login successful!');
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Login failed');
@@ -53,7 +58,7 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className='login'>
       <h2>Login</h2>
       <label>Email:</label>
       <input type="email" name="email" value={loginData.email} onChange={handleInputChange} />
@@ -63,6 +68,10 @@ const Login = () => {
         {loading ? 'Logging In...' : 'Login'}
       </button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      <p>
+        No account? <Link to="/signup">Create account</Link>
+      </p>
     </div>
   );
 };
