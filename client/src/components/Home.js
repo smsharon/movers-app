@@ -1,7 +1,10 @@
 import React from "react";
 import "./Home.css";
+import Footer from './Footer';
+
 const Home = () => {
     return (
+        <div>
         <section className="home-wrapper">
             <div className="paddings innerwidth flexCenter home-container">
                 <div className="flexColStart home-left">
@@ -26,7 +29,8 @@ const Home = () => {
             </div>
             
         </section>
-    
+        <Footer />
+        </div>
     )
 };
 
