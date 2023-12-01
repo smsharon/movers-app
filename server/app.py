@@ -180,16 +180,17 @@ class InventoryResource(Resource):
             for item in inventory_items
         ]
         return jsonify({'inventory_items': inventory_list})
-
+    @jwt_required()
     def post(self):
         data = request.get_json()
+        current_user = get_jwt_identity()
         new_inventory_item = Inventory(
         residence_type_id=data['residence_type_id'],
-        user_id=data['user_id']
+        user_id=current_user['id'],
        )
         db.session.add(new_inventory_item)
         db.session.commit()
-        return jsonify({'message': 'Inventory item created successfully'}), 201
+        return {'message': 'Inventory item created successfully'}, 201
 
 api.add_resource(InventoryResource, '/inventory')
 
@@ -221,7 +222,7 @@ class LocationResource(Resource):
         )
         db.session.add(new_location)
         db.session.commit()
-        return {'message': 'Location created successfully'}, 201
+        return {'message': 'Location created successfully'}, 200
 
 api.add_resource(LocationResource, '/locations')
 
