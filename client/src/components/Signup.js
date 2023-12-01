@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import './Signup.css';
+import { Link } from 'react-router-dom';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -54,8 +56,10 @@ const SignupForm = () => {
   };
 
   return (
+    <div className='signup'>
+      <h2>Sign Up</h2>
     <form onSubmit={handleSubmit}>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      
       <label>
         Username:
         <input type="text" name="username" value={formData.username} onChange={handleChange} />
@@ -85,6 +89,11 @@ const SignupForm = () => {
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
+    {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+    <p>
+        Already have an account? <Link to="/login">Login</Link>
+      </p>
+    </div>
   );
 };
 
