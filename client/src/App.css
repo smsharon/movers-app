@@ -1,38 +1,53 @@
-.App {
-  text-align: center;
+*{
+  font-family: 'Poppins', sans-serif;
+}
+.flexCenter{
+  display: flex;
+  row-gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.paddings{
+  padding: 1.5rem;
+  
+}
+.innerWidth{
+  width: 100%;
+}
+.button{
+  font-weight: 500;
+  padding: 0.6rem 1.4rem;
+  color: white;
+  background-color: rgb(90, 90, 238);
+  border: none;
+  border-radius: 4px;
+  transition: all 300ms ease-in;
+
+}
+.button:hover{
+  cursor: pointer;
+  transform: scale(1.1);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.flexColStart{
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: flex-start;
 }
 
-.App-link {
-  color: #61dafb;
+.secondaryText{
+  color: rgb(140, 139, 139);
+  font-size: 0.9rem;
+}
+body {
+  display: flex;
+  flex-direction: column; /* or row, based on your design */
+  
+   /* Optional: makes sure your content is centered in the viewport */
+  background: black;
+  min-height: 100vh; /* Set the minimum height to 100% of the viewport height */
+  
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
