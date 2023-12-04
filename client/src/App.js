@@ -8,9 +8,8 @@ import Login from './components/Login';
 import CompleteCustomerProfile from './components/Customer';
 import CompleteMovingCompanyProfile from './components/MovingCompany';
 import Inventory from './components/Inventory';
-import LandingPage from './components/LandingPage';
-import Footer from './components/Footer';
-import './styles.css';
+import Logout from './components/Logout';
+import Home from './components/Home';
 
 
 function App() {
@@ -18,6 +17,7 @@ function App() {
     <div className="App">
       <Navbar />
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/complete_customer_profile" element={<CompleteCustomerProfile />} />
         <Route path="/complete_moving_company_profile" element={<CompleteMovingCompanyProfile />} />
@@ -25,8 +25,7 @@ function App() {
         <Route path="/locations" element={<LocationCalculator />} />
         <Route path="/Moving" element={<MovingPriceCalculator />} />
         <Route path="/inventory" element={<Inventory/>} />
-        <Route path="/landingpage" element={<LandingPage/>} />
-        <Route path="/footer" element={<Footer/>} />
+        <Route path="/logout" element={<Logout/>} />
       </Routes>
 
   

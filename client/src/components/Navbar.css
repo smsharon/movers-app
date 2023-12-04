@@ -1,0 +1,48 @@
+
+.h-wrapper{
+    background: black;
+    color: white;
+    width: 100%;
+
+  }
+.h-container{
+    justify-content: space-between;
+    padding-top: 1 rem;
+    padding-bottom: 1 rem;
+    color: white;
+}  
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+  }
+  
+  nav li {
+    cursor: pointer;
+    color: white;
+  }
+  .h-menu {
+    gap: 2 rem;
+  }
+  .nav-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .nav-item {
+    display: inline-block;
+    margin: 0 40px;
+  }
+  
+  .nav-item a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .nav-item a:hover {
+    color: #ffcc00;
+  }

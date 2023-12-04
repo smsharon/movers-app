@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import "./Company.css"
 const CompleteMovingCompanyProfile = () => {
   const [profileData, setProfileData] = useState({
     company_name: '',
@@ -15,15 +15,22 @@ const CompleteMovingCompanyProfile = () => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
 
+  // Function to include the access token in requests
+  const includeAccessToken = () => {
+    const token = localStorage.getItem('access_token');
+    return token ? `Bearer ${token}` : '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/complete_moving_company_profile', {
+      const response = await fetch('/complete_moving_company_profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': includeAccessToken(),
         },
         body: JSON.stringify(profileData),
       });
@@ -44,7 +51,7 @@ const CompleteMovingCompanyProfile = () => {
   };
 
   return (
-    <div>
+    <div className='company'>
       <h2>Complete Moving Company Profile</h2>
       <form onSubmit={handleSubmit}>
         <label>Company Name:</label>

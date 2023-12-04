@@ -1,0 +1,53 @@
+*{
+  font-family: 'Poppins', sans-serif;
+}
+.flexCenter{
+  display: flex;
+  row-gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.paddings{
+  padding: 1.5rem;
+  
+}
+.innerWidth{
+  width: 100%;
+}
+.button{
+  font-weight: 500;
+  padding: 0.6rem 1.4rem;
+  color: white;
+  background-color: rgb(90, 90, 238);
+  border: none;
+  border-radius: 4px;
+  transition: all 300ms ease-in;
+
+}
+.button:hover{
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+.flexColStart{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.secondaryText{
+  color: rgb(140, 139, 139);
+  font-size: 0.9rem;
+}
+body {
+  display: flex;
+  flex-direction: column; /* or row, based on your design */
+  
+   /* Optional: makes sure your content is centered in the viewport */
+  background: black;
+  min-height: 100vh; /* Set the minimum height to 100% of the viewport height */
+  
+}
+

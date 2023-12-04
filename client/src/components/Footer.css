@@ -1,0 +1,74 @@
+/* App.css or your component's CSS file */
+@import '~@fortawesome/fontawesome-free/css/all.css';
+/* Footer.css */
+.footer-wrapper {
+    background-color: #333;
+    color: #fff;
+    padding: 30px 0;
+  }
+  
+  .footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .footer-info,
+  .footer-links,
+  .footer-social {
+    flex: 1;
+    margin-right: 30px;
+  }
+  
+  .footer-info h3,
+  .footer-links h3,
+  .footer-social h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  .footer-links ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-links li {
+    margin-bottom: 10px;
+  }
+  
+  .social-icons {
+    display: flex;
+  }
+  
+  .social-icons a {
+    color: #fff;
+    margin-right: 15px;
+    font-size: 1.5rem;
+  }
+  
+  /* Add hover effect to social icons */
+  .social-icons a:hover {
+    color: #ffc107;
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .footer-container {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+  
+    .footer-info,
+    .footer-links,
+    .footer-social {
+      margin-bottom: 30px;
+    }
+  }
+  
