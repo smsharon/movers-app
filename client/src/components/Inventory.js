@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Container, Form, Button, Card, InputGroup, Image, Row, Col } from 'react-bootstrap';
 
+
 const Inventory = () => {
   const [residenceType, setResidenceType] = useState('');
   const [componentStates, setComponentStates] = useState({
-    furniture: false,
-    electronics: false,
-    kitchenAppliances: false,
-    clothing: false,
+    furniture: true,
+    electronics: true,
+    kitchenAppliances: true,
+    clothing: true,
   });
 
   const componentImages = {
@@ -68,7 +69,6 @@ const Inventory = () => {
             />
           </InputGroup>
         </Form.Group>
-
         <Row>
           <Col md={6}>
             <Card style={{ marginBottom: '10px' }}>
@@ -87,6 +87,7 @@ const Inventory = () => {
                     style={{ width: '30%' }}
                   />
                 )}
+            
 
                 <Form.Check
                   type="checkbox"

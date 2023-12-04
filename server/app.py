@@ -26,7 +26,6 @@ login_manager = LoginManager(app)
 # Flask-Login setup
 login_manager.login_view = 'login'
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -77,8 +76,7 @@ def signup():
 
     # Hash the password
     hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
-
-
+    
     # Create a new user based on the role
     new_user = User(
         username=data['username'],
@@ -94,32 +92,22 @@ def signup():
 @app.route('/complete_customer_profile', methods=['POST'])
 @login_required
 def complete_customer_profile():
+    
     data = request.get_json()
 
-    # Check if the user already has a customer profile
-    existing_profile = Customer.query.filter_by(user_id=current_user.id).first()
+    # Assuming you have a Customer model with appropriate attributes
+    new_customer_profile = Customer(
+        user_id=current_user.id,
+        full_name=data.get('full_name'),
+        contact_phone=data.get('contact_phone'),
+        address=data.get('address'),
+        preferred_contact_method=data.get('preferred_contact_method')
+    )
 
-    if existing_profile:
-        # Update the existing customer profile
-        existing_profile.full_name = data.get('full_name', existing_profile.full_name)
-        existing_profile.contact_phone = data.get('contact_phone', existing_profile.contact_phone)
-        existing_profile.address = data.get('address', existing_profile.address)
-        existing_profile.preferred_contact_method = data.get('preferred_contact_method', existing_profile.preferred_contact_method)
-    else:
-        # Create a new customer profile
-        new_customer_profile = Customer(
-            user_id=current_user.id,
-            full_name=data.get('full_name'),
-            contact_phone=data.get('contact_phone'),
-            address=data.get('address'),
-            preferred_contact_method=data.get('preferred_contact_method')
-        )
-
-        db.session.add(new_customer_profile)
-
+    db.session.add(new_customer_profile)
     db.session.commit()
 
-    return jsonify({'message': 'Customer profile completed or updated successfully'}), 200
+    return jsonify({'message': 'Customer profile completed successfully'}), 200
 
 # Profile completion route for moving companies
 @app.route('/complete_moving_company_profile', methods=['GET', 'POST'])
@@ -141,8 +129,6 @@ def complete_moving_company_profile():
     db.session.commit()
 
     return jsonify({'message': 'Moving company profile completed successfully'}), 200
-
-
 
 class IndexResource(Resource):
     def get(self):
@@ -235,7 +221,6 @@ class LocationResource(Resource):
 
 api.add_resource(LocationResource, '/locations')
 
-
 # notifications endpoints
 class NotificationResource(Resource):
     def get(self):
@@ -262,7 +247,6 @@ class NotificationResource(Resource):
         db.session.commit()
         return jsonify({'message': 'Notification created successfully'}), 201
 api.add_resource(NotificationResource, '/notifications')
-
 
 # Endpoints for moving companies
 class MovingCompanyResource(Resource):
@@ -451,7 +435,6 @@ class UpdateInventoryResource(Resource):
 
 api.add_resource(UpdateInventoryResource, '/inventory/<int:item_id>')
 
-
 # Endpoint to update a location by ID
 class UpdateLocationResource(Resource):
     def put(self, location_id):
@@ -524,10 +507,7 @@ class DeleteBookingResource(Resource):
 
 api.add_resource(DeleteBookingResource, '/bookings/<int:booking_id>')
 
-
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True, port=5000)
-

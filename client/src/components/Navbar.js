@@ -12,6 +12,8 @@ const Navbar = () => {
         <li><Link to="/signup">Signup</Link></li>
         <li><Link to="/locations">Location Calculator</Link></li>
         <li><Link to="/Moving">Moving Price Calculator</Link></li>
+        <li><Link to="/footer"></Link></li>
+        <li><Link to="/landingpage">Home</Link></li>
         <li><Link to="/inventory">Inventory</Link></li>
       </ul>
     </nav>
