@@ -392,7 +392,7 @@ class ResidenceResource(Resource):
     )
         db.session.add(new_residence)
         db.session.commit()
-        return jsonify({'message': 'Residence created successfully'}), 201
+        return {'message': 'Residence created successfully'}, 201
 api.add_resource(ResidenceResource, '/residences')
 
 class CustomerResource(Resource):
