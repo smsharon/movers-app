@@ -72,7 +72,11 @@ const LocationCalculator = () => {
 
       if (response.status === 200) {
         console.log('Distance stored successfully on the backend.');
-      } else {
+
+      } else if (response.redirected) {
+        console.log('Redirected to:', response.url);
+        
+      }else {
         throw new Error('Failed to store distance on the backend.');
       }
     } catch (error) {

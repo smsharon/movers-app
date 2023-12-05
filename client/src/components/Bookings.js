@@ -1,53 +1,50 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { bookMove } from '../redux/bookingSlice';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Container, Form, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom'
+import './Bookings.css';
 
-const Booking = () => {
-  const dispatch = useDispatch();
+const Bookings = () => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const navigate = useNavigate();
 
-  const [movingDate, setMovingDate] = useState('');
-  const [movingTime, setMovingTime] = useState('');
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
-  
-  const user = useSelector((state) => state.user);
-  const inventory = useSelector((state) => state.inventory);
+  const handleSchedule = () => {
+    // You can perform any actions related to scheduling here
+    // For example, send the selected date and time to the server
+    console.log('Scheduled for:', selectedDate);
 
-  const handleBooking = () => {
-    // Dispatch the booking action with the selected date and time
-    dispatch(bookMove({ movingDate, movingTime, user, inventory }));
+    // Redirect or navigate to another page after scheduling
+    navigate('/confirmation'); // Replace '/confirmation' with the actual path
   };
 
   return (
-    <div>
-      <h2>Confirm Your Booking</h2>
+    <Container className="container">
+      <h2>Schedule Movement</h2>
+      <Form>
+        <Form.Group controlId="selectedDate" className="form-group">
+          <Form.Label>Select Date and Time:</Form.Label>
+          <DatePicker
+            selected={selectedDate}
+            onChange={handleDateChange}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="MMMM d, yyyy h:mm aa"
+            className="form-control"
+          />
+        </Form.Group>
 
-      {/* Form for selecting moving date and time */}
-      <div>
-        <label htmlFor="movingDate">Moving Date:</label>
-        <input
-          type="date"
-          id="movingDate"
-          value={movingDate}
-          onChange={(e) => setMovingDate(e.target.value)}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="movingTime">Moving Time:</label>
-        <input
-          type="time"
-          id="movingTime"
-          value={movingTime}
-          onChange={(e) => setMovingTime(e.target.value)}
-        />
-      </div>
-
-      
-
-      {/* Button to confirm booking */}
-      <button onClick={handleBooking}>Confirm Booking</button>
-    </div>
+        <Button variant="primary" type="button" onClick={handleSchedule} className="button-container">
+          Schedule Movement
+        </Button>
+      </Form>
+    </Container>
   );
 };
 
-export default Booking;
+export default Bookings;

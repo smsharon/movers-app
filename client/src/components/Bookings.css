@@ -1,0 +1,65 @@
+/* Bookings.css or your component's CSS file */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0f0; /* Adjusted background color to match theme */
+  border: 1px solid #ccc; /* Adjusted border color to match theme */
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  color: #007bff;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc; /* Adjusted border color to match theme */
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #ffc107; /* Adjusted button background color to match theme */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ffc107; /* Adjusted button hover color to match theme */
+}
+/* Bookings.css or your component's CSS file */
+/* ... existing styles ... */
+
+.date-label {
+    color:#ffc107; /* Change to the desired color for the label */
+  }
+  
+  .schedule-button {
+    background-color: #ffc107; /* Change to the desired background color for the button */
+  }
+  
+  .schedule-button:hover {
+    background-color: #ffc107; /* Change to the desired hover color for the button */
+  }
+  
