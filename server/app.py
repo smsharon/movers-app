@@ -133,10 +133,21 @@ def complete_customer_profile():
 def complete_moving_company_profile():
     current_user = get_jwt_identity()
     data = request.get_json()
+    user_id = current_user['id']
+
+    # have a User model with a 'profile_completed' field
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Update the user's profile completion status and save the details
+    user.profile_completed = True
+
 
     # Assuming you have a MovingCompany model with appropriate attributes
     new_moving_company_profile = MovingCompany(
-        user_id=current_user['id'],
+        user_id=user_id,
         company_name=data.get('company_name'),
         contact_person=data.get('contact_person'),
         contact_email=data.get('contact_email'),
