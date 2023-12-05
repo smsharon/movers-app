@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const MovingPriceCalculator = () => {
   const [residenceType, setResidenceType] = useState('bedsitter');
@@ -6,6 +7,7 @@ const MovingPriceCalculator = () => {
   const [endAddress, setEndAddress] = useState('');
   const [distance, setDistance] = useState(null);
   const [estimatedPrice, setEstimatedPrice] = useState(null);
+  const navigate = useNavigate(); // Import the useNavigate hook
 
   useEffect(() => {
     // Fetch names and distance from backend when the component mounts
@@ -58,6 +60,9 @@ const MovingPriceCalculator = () => {
   const handleCalculatePrice = () => {
     const totalPrice = calculatePrice();
     setEstimatedPrice(totalPrice.toFixed(2));
+
+    // Redirect to Bookings component
+    navigate('/bookings');
   };
 
   return (
