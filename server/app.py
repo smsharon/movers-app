@@ -50,10 +50,10 @@ def login():
     user = User.query.filter_by(email=data.get('email')).first()
 
     if user and check_password_hash(user.password, data['password']):
-        access_token = create_access_token(identity={'id': user.id, 'role': user.role})
+        access_token = create_access_token(identity={'id': user.id, 'role': user.role, 'profile_completed': user.profile_completed})
 
         # Return the user's role in the response
-        return jsonify({'message': 'Login successful', 'access_token': access_token, 'role': user.role}), 200
+        return jsonify({'message': 'Login successful', 'access_token': access_token, 'role': user.role, 'profile_completed': user.profile_completed}), 200
 
     else:
         return jsonify({'error': 'Invalid email or password'}), 401
@@ -85,7 +85,8 @@ def signup():
         username=data['username'],
         email=data['email'],
         password=hashed_password,
-        role=role
+        role=role,
+        profile_completed=False
     )
 
     db.session.add(new_user)
@@ -100,9 +101,19 @@ def complete_customer_profile():
     current_user = get_jwt_identity()
     data = request.get_json()
 
-    # Assuming you have a Customer model with appropriate attributes
+    user_id = current_user['id']
+
+    # have a User model with a 'profile_completed' field
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Update the user's profile completion status and save the details
+    user.profile_completed = True
+
     new_customer_profile = Customer(
-        user_id=current_user['id'],
+        user_id=user_id,
         full_name=data.get('full_name'),
         contact_phone=data.get('contact_phone'),
         email=data.get('email'),
@@ -114,6 +125,7 @@ def complete_customer_profile():
     db.session.commit()
 
     return jsonify({'message': 'Customer profile completed successfully'}), 200
+
 
 # Profile completion route for moving companies
 @app.route('/complete_moving_company_profile', methods=['POST'])
