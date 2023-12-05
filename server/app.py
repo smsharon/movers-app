@@ -46,10 +46,10 @@ def login():
     user = User.query.filter_by(email=data['email']).first()
 
     if user and check_password_hash(user.password, data['password']):
-        access_token = create_access_token(identity={'id': user.id, 'role': user.role})
+        access_token = create_access_token(identity={'id': user.id, 'role': user.role, 'profile_completed': user.profile_completed})
 
         # Return the user's role in the response
-        return jsonify({'message': 'Login successful', 'access_token': access_token, 'role': user.role}), 200
+        return jsonify({'message': 'Login successful', 'access_token': access_token, 'role': user.role, 'profile_completed': user.profile_completed}), 200
 
     else:
         return jsonify({'error': 'Invalid email or password'}), 401
@@ -82,7 +82,8 @@ def signup():
         username=data['username'],
         email=data['email'],
         password=hashed_password,
-        role=role
+        role=role,
+        profile_completed=False
     )
 
     db.session.add(new_user)
