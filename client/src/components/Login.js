@@ -33,16 +33,21 @@ const Login = () => {
         const userData = await response.json();
         const { access_token } = userData;
 
-        // Store the access token securely (e.g., in localStorage)
+        // Store the access token securely (in localStorage)
         localStorage.setItem('access_token', access_token);
+        // Check if the user's profile is completed
+      if (userData.profile_completed) {
+        // Profile is completed, redirect to the dashboard 
+        navigate('/');
+      } else {
+        // Profile is not completed, redirect to the profile completion page
         if (userData.role === 'customer') {
           navigate('/complete_customer_profile');
         } else if (userData.role === 'moving_company') {
           navigate('/complete_moving_company_profile');
-        } else {
-          // Redirect to a default dashboard or home page
-          navigate('/dashboard');
         }
+      }
+
         // Display success message
         setSuccessMessage('Login successful!');
       } else {
