@@ -29,7 +29,6 @@ login_manager = LoginManager(app)
 # Flask-Login setup
 login_manager.login_view = 'login'
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -43,7 +42,12 @@ class SignupForm(FlaskForm):
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    user = User.query.filter_by(email=data['email']).first()
+
+    # Check if 'email' is present in data
+    if 'email' not in data:
+        return jsonify({'message': 'Email is required for login'}), 400
+
+    user = User.query.filter_by(email=data.get('email')).first()
 
     if user and check_password_hash(user.password, data['password']):
         access_token = create_access_token(identity={'id': user.id, 'role': user.role})
@@ -75,8 +79,7 @@ def signup():
 
     # Hash the password
     hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
-
-
+    
     # Create a new user based on the role
     new_user = User(
         username=data['username'],
@@ -133,8 +136,6 @@ def complete_moving_company_profile():
     db.session.commit()
 
     return jsonify({'message': 'Moving company profile completed successfully'}), 200
-
-
 
 class IndexResource(Resource):
     def get(self):
@@ -226,7 +227,6 @@ class LocationResource(Resource):
 
 api.add_resource(LocationResource, '/locations')
 
-
 # notifications endpoints
 class NotificationResource(Resource):
     def get(self):
@@ -253,7 +253,6 @@ class NotificationResource(Resource):
         db.session.commit()
         return jsonify({'message': 'Notification created successfully'}), 201
 api.add_resource(NotificationResource, '/notifications')
-
 
 # Endpoints for moving companies
 class MovingCompanyResource(Resource):
@@ -442,7 +441,6 @@ class UpdateInventoryResource(Resource):
 
 api.add_resource(UpdateInventoryResource, '/inventory/<int:item_id>')
 
-
 # Endpoint to update a location by ID
 class UpdateLocationResource(Resource):
     def put(self, location_id):
@@ -515,10 +513,7 @@ class DeleteBookingResource(Resource):
 
 api.add_resource(DeleteBookingResource, '/bookings/<int:booking_id>')
 
-
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True, port=5000)
-

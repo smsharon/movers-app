@@ -3,6 +3,7 @@ import { Container, Form, Button } from 'react-bootstrap';
 import './Inventory.css';
 import { useNavigate } from 'react-router-dom';
 
+
 const Inventory = () => {
   const [residenceTypes, setResidenceTypes] = useState([]);
   const [selectedResidenceTypes, setSelectedResidenceTypes] = useState([]);

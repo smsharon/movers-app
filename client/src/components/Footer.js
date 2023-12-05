@@ -9,17 +9,19 @@ const Footer = () => {
         <div className="footer-content">
           <div className="footer-info">
             <h3>Contact Us</h3>
-            <p>Email: info@yourcompany.com</p>
-            <p>Phone: +1 (123) 456-7890</p>
+            <p>Email: boxdnloaded@gmail.com</p>
+            <p>Phone: +25769876543</p>
             {/* Add more contact information as needed */}
           </div>
           <div className="footer-links">
             <h3>Quick Links</h3>
             <ul>
+            <div class="quick-links">
               <li><a href="/">Home</a></li>
               <li><a href="/services">Services</a></li>
               <li><a href="/about">About Us</a></li>
               <li><a href="/contact">Contact Us</a></li>
+              </div>
               {/* Add more links to relevant pages */}
             </ul>
           </div>

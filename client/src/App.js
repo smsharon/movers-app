@@ -1,4 +1,3 @@
-// App.js
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -11,7 +10,7 @@ import CompleteMovingCompanyProfile from './components/MovingCompany';
 import Inventory from './components/Inventory';
 import Logout from './components/Logout';
 import Home from './components/Home';
-
+import Bookings from './components/Bookings';  // Import the Booking component
 
 function App() {
   return (
@@ -25,14 +24,16 @@ function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/locations" element={<LocationCalculator />} />
         <Route path="/Moving" element={<MovingPriceCalculator />} />
-        <Route path="/inventory" element={<Inventory/>} />
-        <Route path="/logout" element={<Logout/>} />
+        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/bookings" element={<Bookings />} /> {/* Add this line for the Booking component */}
       </Routes>
-
-     
     </div>
   );
 }
 
 export default App;
+
+
+
 
