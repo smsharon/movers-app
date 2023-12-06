@@ -15,6 +15,8 @@ class User(db.Model,SerializerMixin, UserMixin):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(20), nullable=False)
+    # Add a new field to track profile completion
+    profile_completed = db.Column(db.Boolean, default=False)
     # Relationships
     inventory = db.relationship('Inventory', back_populates='user')
     location = db.relationship('Location', back_populates='user')
