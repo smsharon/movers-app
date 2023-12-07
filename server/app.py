@@ -124,7 +124,25 @@ def complete_customer_profile():
     db.session.add(new_customer_profile)
     db.session.commit()
 
-    return jsonify({'message': 'Customer profile completed successfully'}), 200
+    customer_profile = {
+        'full_name': new_customer_profile.full_name,
+        'contact_phone': new_customer_profile.contact_phone,
+        'email': new_customer_profile.email,
+        'address': new_customer_profile.address,
+        'preferred_contact_method': new_customer_profile.preferred_contact_method
+    }
+
+    user_data = {
+        'id': current_user.id,
+        'username': current_user.username,
+        'email': current_user.email,
+        'role': current_user.role,
+        'profile_completed': current_user.profile_completed
+    }
+
+    return jsonify({'message': 'Customer profile completed successfully', 'user_data': user_data, 'customer_profile': customer_profile}), 200
+
+    #return jsonify({'message': 'Customer profile completed successfully'}), 200
 
 
 # Profile completion route for moving companies
@@ -158,7 +176,25 @@ def complete_moving_company_profile():
     db.session.add(new_moving_company_profile)
     db.session.commit()
 
-    return jsonify({'message': 'Moving company profile completed successfully'}), 200
+    moving_company_profile = {
+        'company_name': new_moving_company_profile.company_name,
+        'contact_person': new_moving_company_profile.contact_person,
+        'contact_email': new_moving_company_profile.contact_email,
+        'contact_phone': new_moving_company_profile.contact_phone,
+        'extra_services': new_moving_company_profile.extra_services
+    }
+
+    user_data = {
+        'id': current_user.id,
+        'username': current_user.username,
+        'email': current_user.email,
+        'role': current_user.role,
+        'profile_completed': current_user.profile_completed
+    }
+
+    return jsonify({'message': 'Moving company profile completed successfully', 'user_data': user_data, 'moving_company_profile': moving_company_profile}), 200
+
+    #return jsonify({'message': 'Moving company profile completed successfully'}), 200
 
 class IndexResource(Resource):
     def get(self):
