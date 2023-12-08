@@ -1,3 +1,4 @@
+
 .location {
     max-width: 400px;
     margin: 0 auto;
@@ -44,4 +45,8 @@
   .btn-primary {
     margin-top: 1rem;
   }
-  
+  .location p{
+    color: black;
+    font-weight: 700;
+    background-color: white;
+  }

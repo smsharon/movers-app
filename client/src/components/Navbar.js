@@ -15,10 +15,11 @@ const Navbar = () => {
         {/*<li><Link to="/complete_customer_profile">Complete Customer Profile</Link></li>
         <li><Link to="/complete_moving_company_profile">Complete Moving Company Profile</Link></li>*/}
         <li className="nav-item"><Link to="/signup">Signup</Link></li>
-        {/*<li className="nav-item"><Link to="/locations">Location Calculator</Link></li>
-        <li className="nav-item"><Link to="/Moving">Moving Price Calculator</Link></li>*/}
+        {/*<li className="nav-item"><Link to="/locations">Location Calculator</Link></li>*/}
+        <li className="nav-item"><Link to="/MovingPriceCalculator">Moving Price Calculator</Link></li>
         <li className="nav-item"><Link to="/inventory">Inventory</Link></li>
         <li className="nav-item"><Link to="/logout">Logout</Link></li>
+        <li className="nav-item"><Link to="/userProfilePage">Profile</Link></li>
       </ul>
     </nav>
     </div>
