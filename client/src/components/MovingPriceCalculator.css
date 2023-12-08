@@ -1,0 +1,32 @@
+.moving-price {
+    color: white;
+  }
+  
+  .moving-price h2,
+  .moving-price label {
+    color:white;
+  }
+  .moving-price p{
+    color: white;
+  }
+  
+  .moving-price input,
+  .moving-price select,
+  .moving-price button {
+    background-color:orange; /* Set your desired background color */
+    color:black;
+    border: solid 5px;
+    border-color: black;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .moving-price button:hover {
+    background-color: orange; /* Set your desired hover background color */
+  }
+  
+  .moving-price form {
+    display: flex;
+    flex-direction: column;
+  }

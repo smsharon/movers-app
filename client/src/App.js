@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import LocationCalculator from './components/Location';
-import MovingPriceCalculator from './components/MovingPriceCalculator';
 import SignupForm from './components/Signup';
 import Login from './components/Login';
 import CompleteCustomerProfile from './components/Customer';
@@ -11,6 +10,8 @@ import Inventory from './components/Inventory';
 import Logout from './components/Logout';
 import Home from './components/Home';
 import Bookings from './components/Bookings';  // Import the Booking component
+import MovingPriceCalculator from './components/MovingPriceCalculator';
+import UserProfilePage from './components/UserProfilePage';
 
 function App() {
   return (
@@ -27,12 +28,15 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/bookings" element={<Bookings />} /> {/* Add this line for the Booking component */}
+        <Route path="/MovingPriceCalculator" element={<MovingPriceCalculator />} />
+        <Route path="/userProfilePage" element={<UserProfilePage />} />
       </Routes>
     </div>
   );
 }
 
 export default App;
+
 
 
 

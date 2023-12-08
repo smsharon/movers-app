@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import "./Location.css"
+import "./Location.css";
+
+
+
 const LocationCalculator = () => {
   const [startCity, setStartCity] = useState('');
   const [endCity, setEndCity] = useState('');
   const [distance, setDistance] = useState(null);
   const [validated, setValidated] = useState(false);
-
+  
   const handleCalculateDistance = async () => {
     try {
       const form = document.getElementById('locationForm');
@@ -23,6 +26,8 @@ const LocationCalculator = () => {
       
       // Call sendDistanceToBackend after successfully calculating the distance
       await sendDistanceToBackend(startCity, endCity, calculatedDistance);
+      // Navigate to the quote calculator page
+      
     } catch (error) {
       console.error('Error while calculating distance:', error);
       alert('Error while calculating distance. Please try again.');
@@ -145,3 +150,4 @@ const LocationCalculator = () => {
 };
 
 export default LocationCalculator;
+

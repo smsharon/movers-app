@@ -2,9 +2,10 @@
     color: white;
     position: relative;
     padding-bottom: 2rem;
-    background-color: black;
-    min-height: 100vh; /* Set the minimum height to 100% of the viewport height */
+    background-color:black;
+    min-height: 70vh; /* Set the minimum height to 100% of the viewport height */
     overflow: hidden; /* Hide overflow to prevent scrolling */
+    height:80vh;
 }
 
 .home-container{
@@ -46,12 +47,15 @@
 
 }
 .orange-circle{
-    height: 4rem;
-    width: 4rem;
-    background: rgba(255, 153, 0, 0.767);
+    height: 5rem;
+    width: 5rem;
+    background: orange;
     border-radius: 999px;
     position: absolute;
     right: 33%;
     top: 5%;
     z-index: -1;
+}
+.secondaryText{
+    color: rgb(6, 1, 1);
 }
