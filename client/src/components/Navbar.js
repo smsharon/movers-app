@@ -19,6 +19,7 @@ const Navbar = () => {
         <li className="nav-item"><Link to="/Moving">Moving Price Calculator</Link></li>*/}
         <li className="nav-item"><Link to="/inventory">Inventory</Link></li>
         <li className="nav-item"><Link to="/logout">Logout</Link></li>
+        <li className="nav-item"><Link to="/MyProfile">MyProfile</Link></li>
       </ul>
     </nav>
     </div>
