@@ -1,18 +1,17 @@
 
-
 .h-wrapper{
-    background: orange;
+    background: black;
     color: white;
     width: 100%;
-    height:75px;
-    display: flex;
-  } 
+    
+    
+
+  }
 .h-container{
     justify-content: space-between;
-    padding-top: 0px;
+    padding-top: 1 rem;
     padding-bottom: 1 rem;
     color: white;
-    margin-top: 0px;
 }  
 
 nav ul {
@@ -24,7 +23,7 @@ nav ul {
   
   nav li {
     cursor: pointer;
-    color: rgb(11, 11, 11);
+    color: white;
   }
   .h-menu {
     gap: 2 rem;
@@ -41,12 +40,11 @@ nav ul {
   
   .nav-item a {
     text-decoration: none;
-    color: rgb(8, 8, 8);
+    color: white;
     font-weight: bold;
     font-size: 16px;
   }
   
   .nav-item a:hover {
-    color:rgba(138, 94, 179, 0.955);
-    font-size: 25px;
+    color: #ffcc00;
   }
