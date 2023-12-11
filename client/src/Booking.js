@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { bookMove } from '../redux/bookingSlice';
 
-const Booking = () => {
+function Booking() {
   const dispatch = useDispatch();
 
   const [movingDate, setMovingDate] = useState('');
   const [movingTime, setMovingTime] = useState('');
 
-  
+
   const user = useSelector((state) => state.user);
   const inventory = useSelector((state) => state.inventory);
 
@@ -29,8 +29,7 @@ const Booking = () => {
           type="date"
           id="movingDate"
           value={movingDate}
-          onChange={(e) => setMovingDate(e.target.value)}
-        />
+          onChange={(e) => setMovingDate(e.target.value)} />
       </div>
 
       <div>
@@ -39,8 +38,7 @@ const Booking = () => {
           type="time"
           id="movingTime"
           value={movingTime}
-          onChange={(e) => setMovingTime(e.target.value)}
-        />
+          onChange={(e) => setMovingTime(e.target.value)} />
       </div>
 
       {/* Display other relevant information, such as pricing or inventory details */}
@@ -49,6 +47,6 @@ const Booking = () => {
       <button onClick={handleBooking}>Confirm Booking</button>
     </div>
   );
-};
+}
 
 export default Booking;
