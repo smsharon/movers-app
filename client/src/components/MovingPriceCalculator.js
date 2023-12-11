@@ -1,96 +1,96 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import './MovingPriceCalculator.css';
 
 const MovingPriceCalculator = () => {
-  const [residenceType, setResidenceType] = useState('bedsitter');
-  const [startAddress, setStartAddress] = useState('');
-  const [endAddress, setEndAddress] = useState('');
-  const [distance, setDistance] = useState(null);
-  const [estimatedPrice, setEstimatedPrice] = useState(null);
-  const navigate = useNavigate(); // Import the useNavigate hook
+  const [residenceType, setResidenceType] = useState('bedsitter'); // Default residence type
+  const [distance, setDistance] = useState('');
+  const [movingPrice, setMovingPrice] = useState(null);
+
+  const basePrice = 30; // Define the base price
 
   useEffect(() => {
-    // Fetch names and distance from backend when the component mounts
-    fetchDistanceAndNamesFromBackend();
+    // Function to include the access token in requests
+    const includeAccessToken = () => {
+      const token = localStorage.getItem('access_token');
+      return token ? `Bearer ${token}` : '';
+    };
+
+    // Function to fetch residence type for the logged-in user
+    const fetchResidenceType = async () => {
+      try {
+        const response = await fetch('/user/residence-type', {
+          headers: {
+            Authorization: includeAccessToken(),
+          },
+        });
+
+        if (response.status === 200) {
+          const data = await response.json();
+          setResidenceType(data.residenceType);
+          console.log('Fetched residence type:', data.residenceType);
+        } else {
+          console.error('Failed to fetch residence type.');
+        }
+      } catch (error) {
+        console.error('Error while fetching residence type:', error);
+      }
+    };
+
+    // Fetch residence type on component mount
+    fetchResidenceType();
   }, []);
 
-  const fetchDistanceAndNamesFromBackend = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/locations', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any additional headers, such as authorization token, if needed
-        },
-      });
-
-      if (response.status === 200) {
-        const data = await response.json();
-        setDistance(data.distance);
-        setStartAddress(data.startAddress);
-        setEndAddress(data.endAddress);
-      } else {
-        console.error('Failed to fetch data from the backend.');
-        // Handle error as needed
-      }
-    } catch (error) {
-      console.error('Error while fetching data:', error);
-      // Handle error as needed
-    }
-  };
-
-  const calculatePrice = () => {
-    const distanceRate = 200; // Rate per km
-    const basePrice = 2000;    // Base price
-
+  // Calculate moving price based on residence type rate
+  useEffect(() => {
     let residenceTypeRate = 1.2; // Default rate for bedsitter
+
     if (residenceType === 'oneBedroom') {
       residenceTypeRate = 2.0;
     } else if (residenceType === 'studio') {
-      residenceTypeRate = 1.6;
-    } else if (residenceType === 'twoBedroom') {
+	
       residenceTypeRate = 2.5;
     }
 
-    const totalPrice = basePrice + (distance * distanceRate) * residenceTypeRate;
+    // Calculate moving price
+    const calculatedMovingPrice = distance ? distance * residenceTypeRate + basePrice * residenceTypeRate : null;
+    setMovingPrice(calculatedMovingPrice);
+  }, [distance, residenceType, basePrice]);
 
-    return totalPrice;
-  };
-
-  const handleCalculatePrice = () => {
-    const totalPrice = calculatePrice();
-    setEstimatedPrice(totalPrice.toFixed(2));
-
-    // Redirect to Bookings component
-    navigate('/bookings');
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // You can add additional validation here before updating the distance state
+    // For simplicity, assuming the input is always a valid number
+    setDistance(e.target.elements.distance.value);
   };
 
   return (
-    <div>
+    <div className='moving-price'>
       <h2>Moving Price Calculator</h2>
-      <label>
-        Residence Type:
-        <select value={residenceType} onChange={(e) => setResidenceType(e.target.value)}>
-          <option value="bedsitter">Bedsitter</option>
-          <option value="oneBedroom">One Bedroom</option>
-          <option value="studio">Studio</option>
-          <option value="twoBedroom">Two Bedroom</option>
-        </select>
-      </label>
-      {distance !== null && startAddress && endAddress ? (
+      <form onSubmit={handleSubmit}>
+        <label>
+          Distance (km):
+          <input type="number" name="distance" value={distance} onChange={(e) => setDistance(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          Residence Type:
+          <select value={residenceType} onChange={(e) => setResidenceType(e.target.value)}>
+            <option value="bedsitter">Bedsitter</option>
+            <option value="oneBedroom">One Bedroom</option>
+            <option value="studio">Studio</option>
+            <option value="twoBedroom">Two Bedroom</option>
+          </select>
+        </label>
+        <br />
+        <button type="submit">Calculate Moving Price</button>
+      </form>
+      {distance !== null && residenceType !== null && (
         <>
-          <p>
-            Move from {startAddress} to {endAddress} ({distance} miles)
-          </p>
-          <button onClick={handleCalculatePrice}>Calculate Moving Price</button>
-          {estimatedPrice !== null && (
-            <p>
-              Estimated Price: ${estimatedPrice}
-            </p>
-          )}
+          <p>Distance: {distance} km</p>
+          <p>Residence Type: {residenceType}</p>
+          <p>Moving Price: ${movingPrice !== null ? movingPrice.toFixed(2) : 'N/A'}</p>
         </>
-      ) : (
-        <p>Loading data...</p>
       )}
     </div>
   );

@@ -1,0 +1,23 @@
+/* CustomerDashboard.css */
+.navbars {
+    display: flex;
+    justify-content: space-around;
+    background-color: #333;
+    padding: 10px;
+  }
+  
+  button {
+    background-color: #555;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #777;
+  }
+  .dash h1{
+    color: white;
+  }
+  
