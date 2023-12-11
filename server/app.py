@@ -16,9 +16,9 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = '190513977cf3449fb7224438381afacab9b7b5b242f30163'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'said8354'
+app.config['JWT_SECRET_KEY'] = '190513977cf3449fb7224438381afacab9b7b5b242f30163'
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -196,6 +196,56 @@ def complete_moving_company_profile():
 
     #return jsonify({'message': 'Moving company profile completed successfully'}), 200
 
+@app.route('/user_profile', methods=['GET'])
+@jwt_required()
+def get_user_profile():
+    current_user = get_jwt_identity()
+
+    user = User.query.get(current_user['id'])
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    if user.role == 'customer':
+        customer_profile = Customer.query.filter_by(user_id=current_user['id']).first()
+
+        if not customer_profile:
+            return jsonify({'error': 'Customer profile not found'}), 404
+
+        return jsonify({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+            'profile_completed': user.profile_completed,
+            'full_name': customer_profile.full_name,
+            'contact_phone': customer_profile.contact_phone,
+            'address': customer_profile.address,
+            'preferred_contact_method': customer_profile.preferred_contact_method
+        }), 200
+
+    elif user.role == 'moving_company':
+        moving_company_profile = MovingCompany.query.filter_by(user_id=current_user['id']).first()
+
+        if not moving_company_profile:
+            return jsonify({'error': 'Moving company profile not found'}), 404
+
+        return jsonify({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+            'profile_completed': user.profile_completed,
+            'company_name': moving_company_profile.company_name,
+            'contact_person': moving_company_profile.contact_person,
+            'contact_email': moving_company_profile.contact_email,
+            'contact_phone': moving_company_profile.contact_phone,
+            'extra_services': moving_company_profile.extra_services
+        }), 200
+
+    else:
+        return jsonify({'error': 'Invalid role'}), 400
+
 class IndexResource(Resource):
     def get(self):
         return jsonify({'message': 'Welcome to BoxdNLoaded!!!'})
@@ -204,6 +254,7 @@ api.add_resource(IndexResource, '/')
 
 #user endpoints
 class UserResource(Resource):
+    @jwt_required()
     def get(self):
         users = User.query.all()
         user_list = [{"username": user.username, "email": user.email, "role": user.role} for user in users]

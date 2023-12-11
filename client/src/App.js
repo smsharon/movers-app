@@ -1,6 +1,5 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import LocationCalculator from './components/Location';
 import SignupForm from './components/Signup';
 import Login from './components/Login';
@@ -11,12 +10,15 @@ import Logout from './components/Logout';
 import Home from './components/Home';
 import Bookings from './components/Bookings';  // Import the Booking component
 import MovingPriceCalculator from './components/MovingPriceCalculator';
-import UserProfilePage from './components/UserProfilePage';
+import CustomerDashboard from './components/CustomerDashboard';
+import MovingCompanyDashboard from './components/MovingCompanyDashboard';
+//import UserProfilePage from './components/UserProfilePage';
+import MyProfile from './components/MyProfile'
 
 function App() {
   return (
     <div className="App">
-      <Navbar />
+     
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -29,7 +31,9 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/bookings" element={<Bookings />} /> {/* Add this line for the Booking component */}
         <Route path="/MovingPriceCalculator" element={<MovingPriceCalculator />} />
-        <Route path="/userProfilePage" element={<UserProfilePage />} />
+        <Route path="/MyProfile" element={<MyProfile />} />
+        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+        <Route path="/moving-company-dashboard" element={<MovingCompanyDashboard />} />
       </Routes>
     </div>
   );

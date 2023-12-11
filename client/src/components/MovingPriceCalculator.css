@@ -1,13 +1,20 @@
 .moving-price {
-    color: white;
+  max-width: 400px;
+  /*max-height: 400px;*/
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
   }
   
   .moving-price h2,
   .moving-price label {
-    color:white;
+    color:black;
   }
   .moving-price p{
-    color: white;
+    color:black;
   }
   
   .moving-price input,

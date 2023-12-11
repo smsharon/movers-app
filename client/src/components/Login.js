@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import './Login.css';
+import Navbar from './Navbar';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,8 +38,12 @@ const Login = () => {
         localStorage.setItem('access_token', access_token);
         // Check if the user's profile is completed
       if (userData.profile_completed) {
-        // Profile is completed, redirect to the dashboard 
-        navigate('/');
+        // Profile is completed, redirect to the respective dashboard
+        if (userData.role === 'customer') {
+          navigate('/customer-dashboard');
+        } else if (userData.role === 'moving_company') {
+          navigate('/moving-company-dashboard');
+        }
       } else {
         // Profile is not completed, redirect to the profile completion page
         if (userData.role === 'customer') {
@@ -63,6 +68,10 @@ const Login = () => {
   };
 
   return (
+    <div className='loginpage'>
+      <nav className='navbar'>
+      <Navbar />
+      </nav>
     <div className='login'>
       <h2>Login</h2>
       <label>Email:</label>
@@ -77,6 +86,7 @@ const Login = () => {
       <p>
         No account? <Link to="/signup">Create account</Link>
       </p>
+    </div>
     </div>
   );
 };

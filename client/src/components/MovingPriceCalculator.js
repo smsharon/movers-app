@@ -47,8 +47,7 @@ const MovingPriceCalculator = () => {
     if (residenceType === 'oneBedroom') {
       residenceTypeRate = 2.0;
     } else if (residenceType === 'studio') {
-      residenceTypeRate = 1.6;
-    } else if (residenceType === 'twoBedroom') {
+	
       residenceTypeRate = 2.5;
     }
 

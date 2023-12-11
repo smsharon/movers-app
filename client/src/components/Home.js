@@ -1,10 +1,14 @@
 import React from "react";
 import "./Home.css";
 import Footer from './Footer';
+import Navbar from "./Navbar";
 
 const Home = () => {
     return (
-        <div>
+        <div className="homepage">
+            <nav className="navbar">
+             <Navbar />
+             </nav>
         <section className="home-wrapper">
             <div className="paddings innerwidth flexCenter home-container">
                 <div className="flexColStart home-left">
