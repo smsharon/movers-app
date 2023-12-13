@@ -5,6 +5,7 @@ const LocationCalculator = () => {
   const [endCity, setEndCity] = useState('');
   const [distance, setDistance] = useState(null);
   const [validated, setValidated] = useState(false);
+  
 
   const handleCalculateDistance = async () => {
     try {

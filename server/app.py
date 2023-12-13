@@ -185,12 +185,13 @@ def complete_moving_company_profile():
     }
 
     user_data = {
-        'id': current_user.id,
-        'username': current_user.username,
-        'email': current_user.email,
-        'role': current_user.role,
-        'profile_completed': current_user.profile_completed
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'role': user.role,
+        'profile_completed': user.profile_completed
     }
+
 
     return jsonify({'message': 'Moving company profile completed successfully', 'user_data': user_data, 'moving_company_profile': moving_company_profile}), 200
 
@@ -366,10 +367,8 @@ api.add_resource(NotificationResource, '/notifications')
 
 # Endpoints for moving companies
 class MovingCompanyResource(Resource):
-    @login_required
+    
     def get(self):
-        if current_user.role != 'moving_company':
-            return jsonify({'error': 'Unauthorized access'}), 403
         companies = MovingCompany.query.all()
         company_list = [
         {

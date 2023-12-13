@@ -13,7 +13,8 @@ import MovingPriceCalculator from './components/MovingPriceCalculator';
 import CustomerDashboard from './components/CustomerDashboard';
 import MovingCompanyDashboard from './components/MovingCompanyDashboard';
 //import UserProfilePage from './components/UserProfilePage';
-import MyProfile from './components/MyProfile'
+import MyProfile from './components/MyProfile';
+import MoversList from './components/MoversList';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/MyProfile" element={<MyProfile />} />
         <Route path="/customer-dashboard" element={<CustomerDashboard />} />
         <Route path="/moving-company-dashboard" element={<MovingCompanyDashboard />} />
+        <Route path="/moving_companies" element={<MoversList />} />
       </Routes>
     </div>
   );

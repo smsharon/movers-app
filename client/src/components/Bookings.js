@@ -19,7 +19,7 @@ const Bookings = () => {
     console.log('Scheduled for:', selectedDate);
 
     // Redirect or navigate to another page after scheduling
-    navigate('/confirmation'); // Replace '/confirmation' with the actual path
+    navigate('/customer-dashboard'); // Replace '/confirmation' with the actual path
   };
 
   return (
