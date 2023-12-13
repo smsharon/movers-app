@@ -16,6 +16,7 @@ email-validator = "*"
 sqlalchemy-serializer = "*"
 virtualenv = "*"
 flask-jwt-extended = "*"
+flask-socketio = "*"
 
 [dev-packages]
 

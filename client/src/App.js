@@ -11,6 +11,9 @@ import Inventory from './components/Inventory';
 import Logout from './components/Logout';
 import Home from './components/Home';
 import Bookings from './components/Bookings';  // Import the Booking component
+import Notification from './components/Notification';
+import About from './components/About';
+import Services from './components/Services';
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/bookings" element={<Bookings />} /> 
+        <Route path="/notification" element={<Notification />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
       </Routes>
     </div>
   );
