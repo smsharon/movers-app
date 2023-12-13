@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const MyProfile = () => {
   const [profileData, setProfileData] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showDetails, setShowDetails] = useState(true); // Set to true by default
 
   // Function to include the access token in requests
   const includeAccessToken = () => {
@@ -30,13 +30,9 @@ const MyProfile = () => {
       });
   }, []);
 
-  const toggleDetails = () => {
-    setShowDetails(!showDetails);
-  };
-
   return (
     <div>
-      <h2 onClick={toggleDetails}>My Profile</h2>
+      <h2>My Profile</h2>
       {showDetails && profileData && (
         <div>
           <p>Username: {profileData.username}</p>
