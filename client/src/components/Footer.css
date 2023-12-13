@@ -83,6 +83,7 @@
   list-style: none;
   padding: 0;
   display: flex;
+  align-items: center; /* Align items vertically in the middle */
 }
 
 .nav-links li {
@@ -97,8 +98,24 @@
   transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-  color: #ffc107; /* Change to your desired hover color */
+/* Update the styles for About Us, Services, and Contact Us buttons */
+.quick-links li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.quick-links button {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.quick-links button:hover {
+  background-color: #000000;
+  color: #ffffff;
 }
 
 /* Home, About Us, Services, and Contact Us Buttons */
@@ -116,81 +133,27 @@
   background-color: #000000;
   color: #ffffff;
 }
+/* Add this CSS to your styles.css file or equivalent */
 
-/* Footer.css */
-.footer-wrapper {
-  background-color: #333;
-  color: #fff;
-  padding: 20px 0; /* Decreased padding */
-}
-
-.footer-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.footer-info,
-.footer-links,
-.footer-social {
-  flex: 1;
-  margin-right: 15px; /* Decreased right margin */
-}
-
-.footer-info h3,
-.footer-links h3,
-.footer-social h3 {
-  font-size: 1.3rem; /* Slightly smaller font size */
-  margin-bottom: 10px; /* Decreased margin */
-  color: #ffc107;
-}
-
-.footer-links ul {
+.quick-links {
   list-style: none;
   padding: 0;
-}
-
-.footer-links li {
-  margin-bottom: 5px; /* Decreased margin */
-}
-
-.social-icons {
+  margin: 0;
   display: flex;
 }
 
-.social-icons a {
-  color: #fff;
-  margin-right: 10px; /* Decreased right margin */
-  font-size: 1.3rem; /* Slightly smaller font size */
+.quick-links li {
+  margin-right: 20px;
+}
+
+.quick-links a {
+  text-decoration: none;
+  color: #f7f0f0;
+  font-weight: bold;
+  font-size: 1rem;
   transition: color 0.3s ease;
 }
 
-/* Add hover effect to social icons */
-.social-icons a:hover {
-  color: #ffc107;
+.quick-links a:hover {
+  color: #ffc107; 
 }
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .footer-container {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .footer-info,
-  .footer-links,
-  .footer-social {
-    margin-bottom: 20px; /* Increased margin on smaller screens */
-    margin-right: 0;
-  }
-}
-

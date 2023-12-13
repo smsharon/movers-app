@@ -26,7 +26,7 @@ function App() {
         <Route path="/Moving" element={<MovingPriceCalculator />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/logout" element={<Logout />} />
-        <Route path="/bookings" element={<Bookings />} /> {/* Add this line for the Booking component */}
+        <Route path="/bookings" element={<Bookings />} /> 
       </Routes>
     </div>
   );
