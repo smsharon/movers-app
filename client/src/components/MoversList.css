@@ -1,45 +1,50 @@
+/* MoversList.css */
+
 .movers-list-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 20px;
-    padding: 20px;
-  }
-
-  .movers-title{
-    width: 100%;
-    text-align: center;
-    color: #333;
-    font-size: 2rem;
-    margin-top: 20px; /* Adjust this value to ensure it's below the navbar */
-  }
-
-  /* Each card is a flex item */
-
-  
-  .company-card {
-    border: 2px solid #ddd; /* Visible border */
-    border-radius: 8px; /* Rounded corners */
-    width: calc(33.333% - 20px); /* 3 items per row, minus gap */
-    box-sizing: border-box;
-    padding: 20px;
-    display: flex;
-    background-color: #f5f5f5;
-    flex-direction: column;
-    align-items: center; /* Center items horizontally */
-    justify-content: center; /* Center items vertically */
-    transition: box-shadow 0.3s ease-in-out;
-  }
-  
-  .additional-details-card {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-  }
-  .company-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+  max-width: 800px;
+  margin: 0 auto;
 }
 
- /* Adjust the color as needed */
-  
+.movers-title {
+  color: #fab907;;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.company-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin: 15px 0;
+  background-color: black;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.truck-icon {
+  margin-bottom: 10px;
+}
+
+.additional-details-card {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: black;
+}
+
+button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #45a049;
+  }
+}

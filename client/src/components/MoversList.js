@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './MoversList.css'; // Import your CSS file for styling
 import { FaTruck } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import './MoversList.css';
 
 const MoversList = () => {
   const [movingCompanies, setMovingCompanies] = useState([]);
@@ -12,7 +13,7 @@ const MoversList = () => {
     const fetchMovingCompanies = async () => {
       try {
         setLoading(true);
-        const response = await fetch('http://localhost:5000/moving_companies'); // Update with your actual API URL
+        const response = await fetch('http://localhost:5000/moving_companies');
         if (response.ok) {
           const movingCompaniesData = await response.json();
           setMovingCompanies(movingCompaniesData.moving_companies);
@@ -40,6 +41,11 @@ const MoversList = () => {
     setSelectedCompany(null);
   };
 
+  const handleSelectCompany = () => {
+    // Redirect to the booking page with the selected company's details
+    // Replace '/booking' with the actual path to your booking page
+    window.location.href = '/bookings';
+  };
 
   return (
     <div className="movers-list-container">
@@ -48,11 +54,10 @@ const MoversList = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {movingCompanies.map((company) => (
         <div key={company.id} className="company-card">
-            <FaTruck className="truck-icon" size={72} color="orange" />
+          <FaTruck className="truck-icon" size={72} color="orange" />
           <h2 className='movers-title'>{company.company_name}</h2>
           <p>Contact Person: {company.contact_person}</p>
           {selectedCompany === company ? (
-            
             <div className="additional-details-card">
               <p>Contact Email: {company.contact_email}</p>
               <p>Contact Phone: {company.contact_phone}</p>
@@ -60,7 +65,10 @@ const MoversList = () => {
               <button onClick={handleBackToMovers}>Back to Movers</button>
             </div>
           ) : (
-            <button onClick={() => handleViewMore(company)}>View More</button>
+            <>
+              <button onClick={() => handleViewMore(company)}>View More</button>
+              <button onClick={handleSelectCompany}>Select Moving Company</button>
+            </>
           )}
         </div>
       ))}

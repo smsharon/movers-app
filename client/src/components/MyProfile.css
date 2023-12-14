@@ -1,0 +1,51 @@
+/* MyProfile.css */
+
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: black;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-header {
+    text-align: center;
+    color: #3498db;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .profile-details {
+    color: #fab907;
+  }
+  
+  .profile-details p {
+    margin: 8px 0;
+  }
+  
+  .profile-details div {
+    margin-top: 15px;
+  }
+  
+  .profile-details div p {
+    margin: 8px 0;
+  }
+  
+  .profile-details div p:first-child {
+    font-weight: bold;
+  }
+  
+  .profile-details div p:last-child {
+    color: #fab907;
+  }
+  
+  .profile-details .extra-services {
+    color: #e67e22;
+  }
+  
+  .profile-details .contact-method {
+    color: #27ae60;
+  }
+  
