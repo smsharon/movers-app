@@ -7,9 +7,12 @@ import MyProfile from './MyProfile';
 import Logout from './Logout';
 import MoversList from './MoversList';
 import './CustomerDashboard.css';
+import Gallery from './Gallery'
+
 
 const CustomerDashboard = () => {
-  const [selectedComponent, setSelectedComponent] = useState(null); // Initialize to null
+
+  const [selectedComponent, setSelectedComponent] = useState('gallery'); // Initialize to null
   const [userProfile, setUserProfile] = useState(null);
   const [error, setError] = useState(null);
 
@@ -23,7 +26,7 @@ const CustomerDashboard = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${authToken}`,
+            Authorization: `Bearer ${authToken},`
           },
         });
 
@@ -48,6 +51,8 @@ const CustomerDashboard = () => {
 
   const renderComponent = () => {
     switch (selectedComponent) {
+      case 'gallery':
+          return <Gallery />;
       case 'moversList':
         return <MoversList />;
       case 'inventory':
@@ -71,12 +76,13 @@ const CustomerDashboard = () => {
         <div className="brand">
           <FaUser className="brand-icon" />
           <h1 className="brand-name">
-            {userProfile ? `Hi ${userProfile.username}, welcome to your dashboard` : 'Loading...'}
-            {userProfile?.profile_completed && <FaCheckCircle className="verified-icon" />}
+            {userProfile ? `Welcome ${userProfile.username}` : 'Loading...'}
+            {userProfile?.profile_completed && <FaCheckCircle className="verified-icon" style={{color:'#fab907'}} />}
           </h1>
         </div>
         <nav className="dashboard-nav">
           <ul>
+           <li onClick={() => handleComponentChange('gallery')}>Gallery</li>
             <li onClick={() => handleComponentChange('moversList')}>Movers</li>
             <li onClick={() => handleComponentChange('inventory')}>Inventory</li>
             <li onClick={() => handleComponentChange('bookings')}>Bookings</li>

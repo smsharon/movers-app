@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./Location.css"
+import { useNavigate } from 'react-router-dom';
+
+
 const LocationCalculator = () => {
+  const navigate = useNavigate();
   const [startCity, setStartCity] = useState('');
   const [endCity, setEndCity] = useState('');
   const [distance, setDistance] = useState(null);
   const [validated, setValidated] = useState(false);
   
 
+ 
   const handleCalculateDistance = async () => {
     try {
       const form = document.getElementById('locationForm');
@@ -24,6 +29,10 @@ const LocationCalculator = () => {
       
       // Call sendDistanceToBackend after successfully calculating the distance
       await sendDistanceToBackend(startCity, endCity, calculatedDistance);
+      setTimeout(() => {
+        navigate('/MovingPriceCalculator');
+        console.log('Navigating to /bookings after 1 minute.');
+      }, 1000); // 60000 milliseconds = 1 minute
     } catch (error) {
       console.error('Error while calculating distance:', error);
       alert('Error while calculating distance. Please try again.');
@@ -133,7 +142,7 @@ const LocationCalculator = () => {
         <button type="submit" className="btn btn-lg btn-primary">
           Calculate Distance
         </button>
-
+      
       </form>
 
       {distance !== null && (
@@ -146,4 +155,3 @@ const LocationCalculator = () => {
 };
 
 export default LocationCalculator;
-

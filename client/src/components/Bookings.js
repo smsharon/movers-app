@@ -3,18 +3,19 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Container, Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import Notification from './Notification'; // Import the Notification component
 import './Bookings.css';
 
 const Bookings = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [successMessage, setSuccessMessage] = useState('');
+  const [showNotification, setShowNotification] = useState(false); // State to control notification visibility
   const navigate = useNavigate();
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
 
-  // Function to include the access token in requests
   const includeAccessToken = () => {
     const token = localStorage.getItem('access_token');
     return token ? `Bearer ${token}` : '';
@@ -24,11 +25,14 @@ const Bookings = () => {
     e.preventDefault();
 
     try {
+      const token = includeAccessToken();
+      console.log('Access Token:', token);
+
       const response = await fetch('/make_booking', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': includeAccessToken(),
+          'Authorization': token,
         },
         body: JSON.stringify({
           movingDate: selectedDate,
@@ -38,9 +42,10 @@ const Bookings = () => {
       if (response.ok) {
         console.log('Booking request submitted successfully!');
         setSuccessMessage('Booking scheduled successfully. Please wait for confirmation from the mover.');
+        // Show the notification
+        setShowNotification(true);
         // Redirect or navigate to another page after scheduling
-        navigate('/customer-dashboard'); // Replace '/confirmation' with the actual path
-  
+        navigate('/notification');
       } else {
         console.error('Failed to submit booking request');
       }
@@ -48,8 +53,6 @@ const Bookings = () => {
       console.error('Error:', error);
     }
   };
-    
-  
 
   return (
     <Container className="container">
@@ -76,6 +79,9 @@ const Bookings = () => {
             {successMessage}
           </Alert>
         )}
+
+        {/* Render the Notification component when showNotification is true */}
+        {showNotification && <Notification companyName="Selected Company" />}
       </Form>
     </Container>
   );

@@ -1,21 +1,23 @@
+// MovingPriceCalculator.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './MovingPriceCalculator.css';
 
 const MovingPriceCalculator = () => {
-  const [residenceType, setResidenceType] = useState('bedsitter'); // Default residence type
+  const navigate = useNavigate();
+
+  const [residenceType, setResidenceType] = useState('bedsitter');
   const [distance, setDistance] = useState('');
   const [movingPrice, setMovingPrice] = useState(null);
 
-  const basePrice = 30; // Define the base price
+  const basePrice = 30;
 
   useEffect(() => {
-    // Function to include the access token in requests
     const includeAccessToken = () => {
       const token = localStorage.getItem('access_token');
       return token ? `Bearer ${token}` : '';
     };
 
-    // Function to fetch residence type for the logged-in user
     const fetchResidenceType = async () => {
       try {
         const response = await fetch('/user/residence-type', {
@@ -27,7 +29,6 @@ const MovingPriceCalculator = () => {
         if (response.status === 200) {
           const data = await response.json();
           setResidenceType(data.residenceType);
-          console.log('Fetched residence type:', data.residenceType);
         } else {
           console.error('Failed to fetch residence type.');
         }
@@ -36,31 +37,28 @@ const MovingPriceCalculator = () => {
       }
     };
 
-    // Fetch residence type on component mount
     fetchResidenceType();
   }, []);
 
-  // Calculate moving price based on residence type rate
   useEffect(() => {
-    let residenceTypeRate = 1.2; // Default rate for bedsitter
+    let residenceTypeRate = 1.2;
 
     if (residenceType === 'oneBedroom') {
       residenceTypeRate = 2.0;
     } else if (residenceType === 'studio') {
-	
       residenceTypeRate = 2.5;
     }
 
-    // Calculate moving price
     const calculatedMovingPrice = distance ? distance * residenceTypeRate + basePrice * residenceTypeRate : null;
     setMovingPrice(calculatedMovingPrice);
   }, [distance, residenceType, basePrice]);
 
-  // Handle form submission
+  const handleCompanySelection = () => {
+    navigate('/moving_companies');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // You can add additional validation here before updating the distance state
-    // For simplicity, assuming the input is always a valid number
     setDistance(e.target.elements.distance.value);
   };
 
@@ -90,6 +88,7 @@ const MovingPriceCalculator = () => {
           <p>Distance: {distance} km</p>
           <p>Residence Type: {residenceType}</p>
           <p>Moving Price: ${movingPrice !== null ? movingPrice.toFixed(2) : 'N/A'}</p>
+          <button onClick={handleCompanySelection}>Select Moving Company</button>
         </>
       )}
     </div>

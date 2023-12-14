@@ -14,6 +14,7 @@ from flask_wtf.csrf import generate_csrf
 from flask import jsonify
 from flask_socketio import SocketIO, emit
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
@@ -27,6 +28,7 @@ db.init_app(app)
 api = Api(app)
 CORS(app)
 login_manager = LoginManager(app)
+socketio = SocketIO(app)
 
 # Flask-Login setup
 login_manager.login_view = 'login'
@@ -534,6 +536,7 @@ class BookingResource(Resource):
 
          db.session.add(new_booking)
          db.session.commit()
+         socketio.emit('booking_notification', {'message': 'A new booking has been made!'})
          return jsonify({'message': 'Booking created successfully'}), 201
 api.add_resource(BookingResource, '/bookings')    
 

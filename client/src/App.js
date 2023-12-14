@@ -9,6 +9,9 @@ import Inventory from './components/Inventory';
 import Logout from './components/Logout';
 import Home from './components/Home';
 import Bookings from './components/Bookings';  // Import the Booking component
+import Notification from './components/Notification';
+import About from './components/About';
+import Services from './components/Services';
 import MovingPriceCalculator from './components/MovingPriceCalculator';
 import CustomerDashboard from './components/CustomerDashboard';
 import MovingCompanyDashboard from './components/MovingCompanyDashboard';
@@ -31,6 +34,10 @@ function App() {
         <Route path="/Moving" element={<MovingPriceCalculator />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/bookings" element={<Bookings />} /> 
+        <Route path="/notification" element={<Notification />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
         <Route path="/bookings" element={<Bookings />} /> {/* Add this line for the Booking component */}
         <Route path="/MovingPriceCalculator" element={<MovingPriceCalculator />} />
         <Route path="/MyProfile" element={<MyProfile />} />

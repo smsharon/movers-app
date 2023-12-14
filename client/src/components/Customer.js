@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import "./Customer.css"
+import { useNavigate } from 'react-router-dom';
+
 const CompleteCustomerProfile = () => {
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState({
     full_name: '',
     contact_phone: '',
@@ -38,6 +41,7 @@ const CompleteCustomerProfile = () => {
       if (response.status === 200) {
         // Profile completion successful, you can redirect or show a success message
         console.log('Profile completed successfully');
+        navigate('/customer-dashboard');
       } else {
         const errorText = await response.text(); // Get the response as text
         console.error('Error response:', errorText);
