@@ -133,11 +133,11 @@ def complete_customer_profile():
     }
 
     user_data = {
-        'id': current_user.id,
-        'username': current_user.username,
-        'email': current_user.email,
-        'role': current_user.role,
-        'profile_completed': current_user.profile_completed
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'role': user.role,
+        'profile_completed': user.profile_completed
     }
 
     return jsonify({'message': 'Customer profile completed successfully', 'user_data': user_data, 'customer_profile': customer_profile}), 200
@@ -246,6 +246,78 @@ def get_user_profile():
 
     else:
         return jsonify({'error': 'Invalid role'}), 400
+#booking
+@app.route('/make_booking', methods=['POST'])
+@jwt_required()
+def make_booking():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    user_id = current_user['id']
+    user = User.query.get(user_id)
+
+    if not user or not user.profile_completed:
+        return jsonify({'error': 'User profile is incomplete'}), 400
+
+    new_booking = Booking(
+        user_id=user_id,
+        moving_date=data.get('moving_date'),
+        moving_time=data.get('moving_time')
+    )
+
+    db.session.add(new_booking)
+    db.session.commit()
+
+    return jsonify({'message': 'Booking request submitted successfully'}), 200
+
+@app.route('/get_booking_requests', methods=['GET'])
+@jwt_required()
+def get_booking_requests():
+    current_user = get_jwt_identity()
+
+    if current_user['role'] != 'moving_company':
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    booking_requests = Booking.query.filter_by(is_accepted=False).all()
+
+    booking_data = [{'id': booking.id, 'moving_date': booking.moving_date, 'moving_time': booking.moving_time}
+                    for booking in booking_requests]
+
+    return jsonify({'bookingRequests': booking_data}), 200
+
+
+@app.route('/manage_booking', methods=['POST'])
+@jwt_required()
+def manage_booking():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    user_id = current_user['id']
+
+    if current_user['role'] != 'moving_company':
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    booking_id = data.get('booking_id')
+    action = data.get('action')
+
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+
+    if action == 'accept':
+        booking.is_accepted = True
+        # Perform any other action needed for accepted bookings
+    elif action == 'decline':
+        # Perform any action needed for declined bookings
+        pass
+    else:
+        return jsonify({'error': 'Invalid action'}), 400
+
+    db.session.commit()
+
+    return jsonify({'message': f'Booking {action}ed successfully'}), 200
+
+
+
 
 class IndexResource(Resource):
     def get(self):
