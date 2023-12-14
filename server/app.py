@@ -12,6 +12,7 @@ from models import db, User, Inventory, Location, Notification, MovingCompany, Q
 from datetime import datetime
 from flask_wtf.csrf import generate_csrf
 from flask import jsonify
+from flask_socketio import SocketIO, emit
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_socketio import SocketIO
 
@@ -20,6 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
 app.config['SECRET_KEY'] = '190513977cf3449fb7224438381afacab9b7b5b242f30163'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = '190513977cf3449fb7224438381afacab9b7b5b242f30163'
+socketio = SocketIO(app)
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -317,6 +319,8 @@ def manage_booking():
     db.session.commit()
 
     return jsonify({'message': f'Booking {action}ed successfully'}), 200
+
+
 
 
 
