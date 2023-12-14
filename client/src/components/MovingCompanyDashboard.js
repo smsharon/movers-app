@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaUser, FaBell, FaCheckCircle } from 'react-icons/fa';
 import Logout from './Logout';
 import MyProfile from './MyProfile';
+import Requests from './Requests';
 import './MovingCompanyDashboard.css'
 
 const MovingCompanyDashboard = () => {
@@ -46,6 +47,8 @@ const MovingCompanyDashboard = () => {
       
       case 'MyProfile':
         return <MyProfile />;
+      case 'requests':
+        return <Requests />;
       case 'logout':
         return <Logout />;
       default:
@@ -69,6 +72,7 @@ const MovingCompanyDashboard = () => {
         <ul>
           
           <li onClick={() => handleComponentChange('MyProfile')}>My Profile</li>
+          <li onClick={() => handleComponentChange('requests')}>Bookings</li>
           <li onClick={() => handleComponentChange('logout')}>Logout</li>
         </ul>
       </nav>
