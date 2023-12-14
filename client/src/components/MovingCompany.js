@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import "./Company.css"
+
 const CompleteMovingCompanyProfile = () => {
   const [profileData, setProfileData] = useState({
     company_name: '',
