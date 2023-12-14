@@ -17,9 +17,9 @@ from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movers.db'
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = '190513977cf3449fb7224438381afacab9b7b5b242f30163'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'said8354'
+app.config['JWT_SECRET_KEY'] = '190513977cf3449fb7224438381afacab9b7b5b242f30163'
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -126,7 +126,25 @@ def complete_customer_profile():
     db.session.add(new_customer_profile)
     db.session.commit()
 
-    return jsonify({'message': 'Customer profile completed successfully'}), 200
+    customer_profile = {
+        'full_name': new_customer_profile.full_name,
+        'contact_phone': new_customer_profile.contact_phone,
+        'email': new_customer_profile.email,
+        'address': new_customer_profile.address,
+        'preferred_contact_method': new_customer_profile.preferred_contact_method
+    }
+
+    user_data = {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'role': user.role,
+        'profile_completed': user.profile_completed
+    }
+
+    return jsonify({'message': 'Customer profile completed successfully', 'user_data': user_data, 'customer_profile': customer_profile}), 200
+
+    #return jsonify({'message': 'Customer profile completed successfully'}), 200
 
 
 # Profile completion route for moving companies
@@ -160,7 +178,148 @@ def complete_moving_company_profile():
     db.session.add(new_moving_company_profile)
     db.session.commit()
 
-    return jsonify({'message': 'Moving company profile completed successfully'}), 200
+    moving_company_profile = {
+        'company_name': new_moving_company_profile.company_name,
+        'contact_person': new_moving_company_profile.contact_person,
+        'contact_email': new_moving_company_profile.contact_email,
+        'contact_phone': new_moving_company_profile.contact_phone,
+        'extra_services': new_moving_company_profile.extra_services
+    }
+
+    user_data = {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'role': user.role,
+        'profile_completed': user.profile_completed
+    }
+
+
+    return jsonify({'message': 'Moving company profile completed successfully', 'user_data': user_data, 'moving_company_profile': moving_company_profile}), 200
+
+    #return jsonify({'message': 'Moving company profile completed successfully'}), 200
+
+@app.route('/user_profile', methods=['GET'])
+@jwt_required()
+def get_user_profile():
+    current_user = get_jwt_identity()
+
+    user = User.query.get(current_user['id'])
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    if user.role == 'customer':
+        customer_profile = Customer.query.filter_by(user_id=current_user['id']).first()
+
+        if not customer_profile:
+            return jsonify({'error': 'Customer profile not found'}), 404
+
+        return jsonify({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+            'profile_completed': user.profile_completed,
+            'full_name': customer_profile.full_name,
+            'contact_phone': customer_profile.contact_phone,
+            'address': customer_profile.address,
+            'preferred_contact_method': customer_profile.preferred_contact_method
+        }), 200
+
+    elif user.role == 'moving_company':
+        moving_company_profile = MovingCompany.query.filter_by(user_id=current_user['id']).first()
+
+        if not moving_company_profile:
+            return jsonify({'error': 'Moving company profile not found'}), 404
+
+        return jsonify({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role,
+            'profile_completed': user.profile_completed,
+            'company_name': moving_company_profile.company_name,
+            'contact_person': moving_company_profile.contact_person,
+            'contact_email': moving_company_profile.contact_email,
+            'contact_phone': moving_company_profile.contact_phone,
+            'extra_services': moving_company_profile.extra_services
+        }), 200
+
+    else:
+        return jsonify({'error': 'Invalid role'}), 400
+#booking
+@app.route('/make_booking', methods=['POST'])
+@jwt_required()
+def make_booking():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    user_id = current_user['id']
+    user = User.query.get(user_id)
+
+    if not user or not user.profile_completed:
+        return jsonify({'error': 'User profile is incomplete'}), 400
+
+    new_booking = Booking(
+        user_id=user_id,
+        moving_date=data.get('moving_date'),
+        moving_time=data.get('moving_time')
+    )
+
+    db.session.add(new_booking)
+    db.session.commit()
+
+    return jsonify({'message': 'Booking request submitted successfully'}), 200
+
+@app.route('/get_booking_requests', methods=['GET'])
+@jwt_required()
+def get_booking_requests():
+    current_user = get_jwt_identity()
+
+    if current_user['role'] != 'moving_company':
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    booking_requests = Booking.query.filter_by(is_accepted=False).all()
+
+    booking_data = [{'id': booking.id, 'moving_date': booking.moving_date, 'moving_time': booking.moving_time}
+                    for booking in booking_requests]
+
+    return jsonify({'bookingRequests': booking_data}), 200
+
+
+@app.route('/manage_booking', methods=['POST'])
+@jwt_required()
+def manage_booking():
+    current_user = get_jwt_identity()
+    data = request.get_json()
+    user_id = current_user['id']
+
+    if current_user['role'] != 'moving_company':
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    booking_id = data.get('booking_id')
+    action = data.get('action')
+
+    booking = Booking.query.get(booking_id)
+
+    if not booking:
+        return jsonify({'error': 'Booking not found'}), 404
+
+    if action == 'accept':
+        booking.is_accepted = True
+        # Perform any other action needed for accepted bookings
+    elif action == 'decline':
+        # Perform any action needed for declined bookings
+        pass
+    else:
+        return jsonify({'error': 'Invalid action'}), 400
+
+    db.session.commit()
+
+    return jsonify({'message': f'Booking {action}ed successfully'}), 200
+
+
+
 
 class IndexResource(Resource):
     def get(self):
@@ -170,6 +329,7 @@ api.add_resource(IndexResource, '/')
 
 #user endpoints
 class UserResource(Resource):
+    @jwt_required()
     def get(self):
         users = User.query.all()
         user_list = [{"username": user.username, "email": user.email, "role": user.role} for user in users]
@@ -281,10 +441,8 @@ api.add_resource(NotificationResource, '/notifications')
 
 # Endpoints for moving companies
 class MovingCompanyResource(Resource):
-    @login_required
+    
     def get(self):
-        if current_user.role != 'moving_company':
-            return jsonify({'error': 'Unauthorized access'}), 403
         companies = MovingCompany.query.all()
         company_list = [
         {
@@ -395,7 +553,7 @@ class ResidenceResource(Resource):
     )
         db.session.add(new_residence)
         db.session.commit()
-        return jsonify({'message': 'Residence created successfully'}), 201
+        return {'message': 'Residence created successfully'}, 201
 api.add_resource(ResidenceResource, '/residences')
 
 class CustomerResource(Resource):

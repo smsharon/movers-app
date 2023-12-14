@@ -71,8 +71,8 @@ class Notification(db.Model):
     serialize_rules = ('-user.notification',)
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    notification_type = db.Column(db.String(50))
-    content = db.Column(db.Text)
+    message = db.Column(db.String(255), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     user = db.relationship('User', back_populates='notification')
 
@@ -105,17 +105,14 @@ class Quote(db.Model):
 
 
 class Booking(db.Model):
-    serialize_rules = ('-user.bookings', '-quote.bookings', '-residence_type.bookings')
+    serialize_rules = ('-user.bookings',  '-residence_type.bookings')
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    quote_id = db.Column(db.Integer, db.ForeignKey('quote.id'), nullable=False)
-    booking_status = db.Column(db.String(50))
+    is_accepted = db.Column(db.Boolean, default=False)
     moving_date = db.Column(db.Date)
     moving_time = db.Column(db.Time)
-    residence_type_id = db.Column(db.Integer, db.ForeignKey('residence.id'), nullable=False)
-    residence_type = db.relationship('Residence', backref=db.backref('bookings', lazy=True))
     user = db.relationship('User', back_populates='bookings')
-    quote = db.relationship('Quote', backref=db.backref('bookings', lazy=True))
+    
 
 class Residence(db.Model):
     serialize_rules = ('-inventory.residence_type', '-quote.residence_type', '-booking.residence_type')

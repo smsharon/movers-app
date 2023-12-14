@@ -1,8 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import LocationCalculator from './components/Location';
-import MovingPriceCalculator from './components/MovingPriceCalculator';
 import SignupForm from './components/Signup';
 import Login from './components/Login';
 import CompleteCustomerProfile from './components/Customer';
@@ -14,11 +12,17 @@ import Bookings from './components/Bookings';  // Import the Booking component
 import Notification from './components/Notification';
 import About from './components/About';
 import Services from './components/Services';
+import MovingPriceCalculator from './components/MovingPriceCalculator';
+import CustomerDashboard from './components/CustomerDashboard';
+import MovingCompanyDashboard from './components/MovingCompanyDashboard';
+//import UserProfilePage from './components/UserProfilePage';
+import MyProfile from './components/MyProfile';
+import MoversList from './components/MoversList';
 
 function App() {
   return (
     <div className="App">
-      <Navbar />
+     
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -33,12 +37,19 @@ function App() {
         <Route path="/notification" element={<Notification />} />
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
+        <Route path="/bookings" element={<Bookings />} /> {/* Add this line for the Booking component */}
+        <Route path="/MovingPriceCalculator" element={<MovingPriceCalculator />} />
+        <Route path="/MyProfile" element={<MyProfile />} />
+        <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+        <Route path="/moving-company-dashboard" element={<MovingCompanyDashboard />} />
+        <Route path="/moving_companies" element={<MoversList />} />
       </Routes>
     </div>
   );
 }
 
 export default App;
+
 
 
 

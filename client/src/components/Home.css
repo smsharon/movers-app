@@ -1,10 +1,15 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .home-wrapper{
     color: white;
     position: relative;
     padding-bottom: 2rem;
     background-color: black;
-    min-height: 100vh; /* Set the minimum height to 100% of the viewport height */
-    overflow: hidden; /* Hide overflow to prevent scrolling */
+    
 }
 
 .home-container{

@@ -1,0 +1,39 @@
+.moving-price {
+  max-width: 400px;
+  /*max-height: 400px;*/
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  }
+  
+  .moving-price h2,
+  .moving-price label {
+    color:black;
+  }
+  .moving-price p{
+    color:black;
+  }
+  
+  .moving-price input,
+  .moving-price select,
+  .moving-price button {
+    background-color:orange; /* Set your desired background color */
+    color:black;
+    border: solid 5px;
+    border-color: black;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .moving-price button:hover {
+    background-color: orange; /* Set your desired hover background color */
+  }
+  
+  .moving-price form {
+    display: flex;
+    flex-direction: column;
+  }
