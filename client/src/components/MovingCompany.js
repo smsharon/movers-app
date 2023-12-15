@@ -29,7 +29,7 @@ import "./Company.css"
 
     try {
       setLoading(true);
-      const response = await fetch('/complete_moving_company_profile', {
+      const response = await fetch('https://mover-server.onrender.com/complete_moving_company_profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

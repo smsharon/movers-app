@@ -14,7 +14,7 @@ const MovingCompanyDashboard = () => {
     const fetchUserProfile = async () => {
       try {
         const authToken = localStorage.getItem('access_token');
-        const apiUrl = 'http://localhost:5000/user_profile';
+        const apiUrl = 'https://mover-server.onrender.com/user_profile';
 
         const response = await fetch(apiUrl, {
           method: 'GET',

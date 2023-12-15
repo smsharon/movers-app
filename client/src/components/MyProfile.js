@@ -13,7 +13,7 @@ const MyProfile = () => {
 
   useEffect(() => {
     // Fetch user profile data based on the user's role
-    const apiUrl = 'http://localhost:5000/user_profile';
+    const apiUrl = 'https://mover-server.onrender.com/user_profile';
 
     fetch(apiUrl, {
       method: 'GET',
