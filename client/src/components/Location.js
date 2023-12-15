@@ -66,7 +66,7 @@ const LocationCalculator = () => {
   };
   const sendDistanceToBackend = async (currentAddress, newAddress, distance) => {
     try {
-      const response = await fetch('/locations', {
+      const response = await fetch('https://mover-server.onrender.com/locations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

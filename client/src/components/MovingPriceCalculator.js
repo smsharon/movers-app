@@ -20,7 +20,7 @@ const MovingPriceCalculator = () => {
 
     const fetchResidenceType = async () => {
       try {
-        const response = await fetch('/user/residence-type', {
+        const response = await fetch('https://mover-server.onrender.com/user/residence-type', {
           headers: {
             Authorization: includeAccessToken(),
           },

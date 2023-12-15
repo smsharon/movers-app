@@ -29,7 +29,7 @@ const CompleteCustomerProfile = () => {
   
     try {
       setLoading(true);
-      const response = await fetch('/complete_customer_profile', {
+      const response = await fetch('https://mover-server.onrender.com/complete_customer_profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

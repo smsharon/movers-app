@@ -44,7 +44,7 @@ const MoversList = () => {
   const handleSelectCompany = () => {
     // Redirect to the booking page with the selected company's details
     // Replace '/booking' with the actual path to your booking page
-    window.location.href = '/bookings';
+    window.location.href = 'https://mover-server.onrender.com/bookings';
   };
 
   return (

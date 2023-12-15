@@ -13,7 +13,7 @@ const Requests = () => {
 
   const fetchBookingRequests = async () => {
     try {
-      const response = await fetch('/get_booking_requests', {
+      const response = await fetch('https://mover-server.onrender.com/get_booking_requests', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

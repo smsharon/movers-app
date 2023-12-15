@@ -12,7 +12,7 @@ const Inventory = () => {
   useEffect(() => {
     const fetchResidenceTypes = async () => {
       try {
-        const response = await fetch('/residences');  // Assuming this is the endpoint to fetch residence types
+        const response = await fetch('https://mover-server.onrender.com/residences');  // Assuming this is the endpoint to fetch residence types
         const data = await response.json();
 
         if (response.status === 200) {
