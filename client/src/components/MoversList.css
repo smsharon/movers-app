@@ -6,7 +6,7 @@
   padding: 20px;
 }
 
-.movers-title{
+.movers-title {
   width: 100%;
   text-align: center;
   color: #333;
@@ -15,30 +15,39 @@
 }
 
 /* Each card is a flex item */
-
-
 .company-card {
-  border: 2px solid #ddd; /* Visible border */
-  border-radius: 8px; /* Rounded corners */
-  width: calc(33.333% - 20px); /* 3 items per row, minus gap */
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  width: calc(33.333% - 20px);
   box-sizing: border-box;
   padding: 20px;
   display: flex;
   background-color: #f5f5f5;
   flex-direction: column;
-  align-items: center; /* Center items horizontally */
-  justify-content: center; /* Center items vertically */
+  align-items: center;
+  justify-content: center;
   transition: box-shadow 0.3s ease-in-out;
+}
+
+.company-card p {
+  color: black;
 }
 
 .additional-details-card {
   margin-top: 10px;
   padding: 10px;
-  background-color: #f5f5f5;
+  background-color: white;
   border: 1px solid #ddd;
 }
-.company-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+
+.back-to-movers-button {
+  margin-top: 10px;
 }
 
-/* Adjust the color as needed */
+.select-moving-company-button {
+  margin-top: 10px;
+}
+
+.company-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

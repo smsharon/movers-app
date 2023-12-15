@@ -35,7 +35,7 @@ const MyProfile = () => {
     <div>
       <h2>My Profile</h2>
       {showDetails && profileData && (
-        <div>
+        <div className='profile'>
           <p>Username: {profileData.username}</p>
           <p>Email: {profileData.email}</p>
           <p>Role: {profileData.role}</p>
@@ -49,7 +49,7 @@ const MyProfile = () => {
             </div>
           )}
           {profileData.role === 'moving_company' && (
-            <div>
+            <div className='profile'>
               <p>Company Name: {profileData.company_name}</p>
               <p>Contact Person: {profileData.contact_person}</p>
               <p>Contact Email: {profileData.contact_email}</p>

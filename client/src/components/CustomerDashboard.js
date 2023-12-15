@@ -12,7 +12,7 @@ import Gallery from './Gallery'
 
 const CustomerDashboard = () => {
 
-  const [selectedComponent, setSelectedComponent] = useState('gallery'); // Initialize to null
+  const [selectedComponent, setSelectedComponent] = useState(null); // Initialize to null
   const [userProfile, setUserProfile] = useState(null);
   const [error, setError] = useState(null);
 

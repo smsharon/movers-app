@@ -49,11 +49,11 @@
   .login p {
     margin-top: 10px;
     text-align: center;
-    color: white;
+    color: #fab907;
   }
   
   .login p a {
-    color: #2196f3;
+    color: white;
     text-decoration: none;
     font-weight: bold;
   }

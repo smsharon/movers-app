@@ -301,6 +301,10 @@ def manage_booking():
 
     booking_id = data.get('booking_id')
     action = data.get('action')
+    moving_date = data.get('movingDate')  # Adjust according to your data structure
+
+    # Parse the date string to a datetime object
+    moving_date = datetime.strptime(moving_date, '%Y-%m-%dT%H:%M:%S.%fZ')
 
     booking = Booking.query.get(booking_id)
 
@@ -319,11 +323,6 @@ def manage_booking():
     db.session.commit()
 
     return jsonify({'message': f'Booking {action}ed successfully'}), 200
-
-
-
-
-
 
 class IndexResource(Resource):
     def get(self):

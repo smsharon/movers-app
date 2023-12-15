@@ -10,7 +10,7 @@
   
   .customer h2 {
     text-align: center;
-    color: #333;
+    color: #fab907;
   }
   
   .customer form {
@@ -20,7 +20,7 @@
   
   .customer label {
     margin-bottom: 8px;
-    color: #555;
+    color: #fab907;
   }
   
   .customer input {
@@ -35,7 +35,7 @@
   .customer button {
     width: 100%;
     padding: 10px;
-    background-color: #3498db;
+    background-color: #fab907;;
     color: white;
     border: none;
     border-radius: 4px;

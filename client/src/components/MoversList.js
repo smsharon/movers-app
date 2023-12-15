@@ -58,18 +58,23 @@ const MoversList = () => {
           <h2 className='movers-title'>{company.company_name}</h2>
           <p>Contact Person: {company.contact_person}</p>
           {selectedCompany === company ? (
-            <div className="additional-details-card">
-              <p>Contact Email: {company.contact_email}</p>
-              <p>Contact Phone: {company.contact_phone}</p>
-              <p>Extra Services: {company.extra_services}</p>
-              <button onClick={handleBackToMovers}>Back to Movers</button>
-            </div>
-          ) : (
-            <>
-              <button onClick={() => handleViewMore(company)}>View More</button>
-              <button onClick={handleSelectCompany}>Select Moving Company</button>
-            </>
-          )}
+  <div className="additional-details-card">
+    <p>Contact Email: {company.contact_email}</p>
+    <p>Contact Phone: {company.contact_phone}</p>
+    <p>Extra Services: {company.extra_services}</p>
+    <button onClick={handleBackToMovers} className="back-to-movers-button">
+      Back to Movers
+    </button>
+    <button onClick={handleSelectCompany} className="select-moving-company-button">
+      Select Moving Company
+    </button>
+  </div>
+) : (
+  <>
+    <button onClick={() => handleViewMore(company)}>View More</button>
+  </>
+)}
+
         </div>
       ))}
     </div>
