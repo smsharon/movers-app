@@ -48,4 +48,10 @@
   .profile-details .contact-method {
     color: #27ae60;
   }
+
+  .profile p {
+    color:black;
+    align-items: center;
+    text-align: center;
+  }
   

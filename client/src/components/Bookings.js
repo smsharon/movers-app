@@ -35,7 +35,7 @@ const Bookings = () => {
           'Authorization': token,
         },
         body: JSON.stringify({
-          movingDate: selectedDate,
+          movingDate: selectedDate.toISOString(),
         }),
       });
 

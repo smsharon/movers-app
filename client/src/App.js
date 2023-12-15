@@ -19,6 +19,7 @@ import MovingCompanyDashboard from './components/MovingCompanyDashboard';
 import MyProfile from './components/MyProfile';
 import MoversList from './components/MoversList';
 import Requests from './components/Requests';
+import Gallery from './components/Gallery';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path="/moving-company-dashboard" element={<MovingCompanyDashboard />} />
         <Route path="/moving_companies" element={<MoversList />} />
         <Route path="/requests" element={<Requests />} />
+        <Route path="/gallery" element={<Gallery />} />
       </Routes>
     </div>
   );
