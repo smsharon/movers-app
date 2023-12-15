@@ -1,0 +1,48 @@
+.location {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: white;
+    background-color: black;
+  }
+
+.d-flex {
+    display: flex;
+  }
+  
+  .flex-column {
+    flex-direction: column;
+  }
+  
+  .align-items-center {
+    align-items: center;
+  }
+  
+  .vh-100 {
+    height: 100vh;
+  }
+  
+  #locationForm {
+    width: 50%;
+  }
+  
+  .form-label {
+    margin-top: 1rem;
+  }
+  
+  .form-control-lg {
+    margin-bottom: 1rem;
+  }
+  
+  .invalid-feedback {
+    color: red;
+    margin-top: 0.25rem;
+  }
+  
+  .btn-primary {
+    margin-top: 1rem;
+  }
+  

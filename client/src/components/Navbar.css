@@ -1,0 +1,46 @@
+.h-container {
+  justify-content: space-between;
+  padding: 0.5rem;
+  color: white;
+}
+
+nav ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+}
+
+nav li {
+  cursor: pointer;
+  color: white;
+}
+
+.h-menu {
+  gap: 1.5rem;
+}
+
+.nav-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.nav-item {
+  display: inline-flex;
+  margin: 0 10px;
+}
+
+.nav-item a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.nav-item a:hover {
+  color: #ffcc00;
+}
+
+img {
+  width: 60px; /* adjust as needed */
+}

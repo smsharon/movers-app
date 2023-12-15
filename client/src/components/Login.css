@@ -1,0 +1,72 @@
+/* Add this CSS to your stylesheet or component */
+.login {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login h2 {
+    text-align: center;
+    color: #fab907;
+  }
+  
+  .login label {
+    display: block;
+    margin-bottom: 8px;
+    color: #fab907;
+  }
+  
+  .login input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .login button {
+    width: 100%;
+    padding: 10px;
+    background-color: #fab907;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+  }
+  .login button:hover {
+    background: #f7d40f;
+  }
+  
+  .login button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  .login p {
+    margin-top: 10px;
+    text-align: center;
+    color: #fab907;
+  }
+  
+  .login p a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .login p a:hover {
+    background: #2d4c66;
+  }
+  
+  .login p.error {
+    color: red;
+  }
+  
+  .login p.success {
+    color: green;
+  }
+  

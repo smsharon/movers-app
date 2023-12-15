@@ -1,0 +1,54 @@
+/* Add this CSS to your stylesheet or component */
+.customer {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .customer h2 {
+    text-align: center;
+    color: #fab907;
+  }
+  
+  .customer form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .customer label {
+    margin-bottom: 8px;
+    color: #fab907;
+  }
+  
+  .customer input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .customer button {
+    width: 100%;
+    padding: 10px;
+    background-color: #fab907;;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .customer button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  .customer p.error {
+    margin-top: 8px;
+    color: red;
+  }
+  

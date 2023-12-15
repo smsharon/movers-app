@@ -1,0 +1,38 @@
+/* Account.css */
+
+.account-container {
+    position: relative;
+  }
+  
+  .account-dropdown {
+    padding: 10px;
+    background-color: #3498db;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .dropdown-content {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    z-index: 1;
+  }
+  
+  select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+  }
+  
+  /* Optional: Style for the dropdown options */
+  select option {
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  

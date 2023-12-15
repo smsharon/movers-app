@@ -1,0 +1,160 @@
+/* App.css or your component's CSS file */
+@import '~@fortawesome/fontawesome-free/css/all.css';
+
+/* Footer.css */
+.footer-wrapper {
+  background-color: #333;
+  color: #fff;
+  padding: 30px 0;
+  bottom: 0;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px; /* Set a maximum width for better readability on larger screens */
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.footer-info,
+.footer-links,
+.footer-social {
+  flex: 1;
+  margin-right: 30px;
+}
+
+.footer-info h3,
+.footer-links h3,
+.footer-social h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #ffc107; /* Add a consistent color for heading text */
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.social-icons {
+  display: flex;
+}
+
+.social-icons a {
+  color: #fff;
+  margin-right: 15px;
+  font-size: 1.5rem;
+  transition: color 0.3s ease; /* Add a smooth transition for color changes */
+}
+
+/* Add hover effect to social icons */
+.social-icons a:hover {
+  color: #ffc107;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-info,
+  .footer-links,
+  .footer-social {
+    margin-bottom: 30px;
+    margin-right: 0; /* Remove right margin on smaller screens */
+  }
+}
+
+/* Navigation.css or your component's CSS file */
+.nav-links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  align-items: center; /* Align items vertically in the middle */
+}
+
+.nav-links li {
+  margin-right: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* Update the styles for About Us, Services, and Contact Us buttons */
+.quick-links li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.quick-links button {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.quick-links button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* Home, About Us, Services, and Contact Us Buttons */
+.quick-links button {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.quick-links button:hover {
+  background-color: #000000;
+  color: #ffffff;
+}
+/* Add this CSS to your styles.css file or equivalent */
+
+.quick-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.quick-links li {
+  margin-right: 20px;
+}
+
+.quick-links a {
+  text-decoration: none;
+  color: #f7f0f0;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.quick-links a:hover {
+  color: #ffc107; 
+}

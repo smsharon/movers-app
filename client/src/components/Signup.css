@@ -1,0 +1,72 @@
+/* Signup.css */
+
+.signup {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .signup h2 {
+    text-align: center;
+    color: #fab907;
+  }
+  
+  .signup label {
+    margin-bottom: 8px;
+    color: #fab907;
+  }
+  
+  
+  .signup input,
+  select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .signup button {
+    width: 100%;
+    padding: 10px;
+    background-color: #fab907;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .signup button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  .signup p.error {
+    color: red;
+    margin-top: 8px;
+  }
+  
+  .signup p.success {
+    color: green;
+    margin-top: 8px;
+  }
+  
+  .signup p {
+    margin-top: 16px;
+    text-align: center;
+    color: #fab907;
+  }
+  
+  .signup p a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .signup p a:hover {
+    text-decoration: underline;
+  }

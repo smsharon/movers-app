@@ -1,0 +1,54 @@
+/* Updated CSS */
+.company {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #0c0c0c;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: black; /* Change the background color to black */
+}
+
+.company h2 {
+  text-align: center;
+  color: #fab907; /* Change the text color to #fab907 */
+}
+
+.company form {
+  display: flex;
+  flex-direction: column;
+}
+
+.company label {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.company input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.company button {
+  width: 100%;
+  padding: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.company button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.company p.error {
+  margin-top: 8px;
+  color: red;
+}

@@ -1,0 +1,53 @@
+.movers-list-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+  padding: 20px;
+}
+
+.movers-title {
+  width: 100%;
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  margin-top: 20px; /* Adjust this value to ensure it's below the navbar */
+}
+
+/* Each card is a flex item */
+.company-card {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  width: calc(33.333% - 20px);
+  box-sizing: border-box;
+  padding: 20px;
+  display: flex;
+  background-color: #f5f5f5;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.company-card p {
+  color: black;
+}
+
+.additional-details-card {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.back-to-movers-button {
+  margin-top: 10px;
+}
+
+.select-moving-company-button {
+  margin-top: 10px;
+}
+
+.company-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
