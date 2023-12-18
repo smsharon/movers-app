@@ -1,7 +1,7 @@
 #BoxdNloaded movers Web Application
 
 ## Description
-BoxdNloaded is an e-commerce web application tailored for efficient moving services. Users can browse through a default checklist of inventory items related to various housing types, manage their moving boxes, share home details, approve or decline quotes, schedule moves, and receive push notifications upon confirmation.
+BoxdNloaded is a web application tailored for efficient moving services. Users can browse through a default checklist of inventory items related to various housing types, manage their moving boxes, share home details, approve or decline quotes, schedule moves, and receive push notifications upon confirmation.
 
 ## MVP Features
 User Authentication: Register and log in to manage moving-related activities.
